@@ -1,0 +1,33 @@
+%% PDFメタデータの文字化け防止
+% https://blog.miz-ar.info/2015/09/latex-hyperref-tips/
+% https://tex.stackexchange.com/questions/24445/hyperref-lualatex-and-unicode-bookmarks-issue-garbled-page-numbers-in-ar-for-l
+\hypersetup{%
+  pdfencoding=auto
+}
+
+%% Fonts
+\usepackage[T1]{fontenc}
+\usepackage{textcomp}
+\usepackage[scale=1.0]{tgheros}
+\usepackage[scaled]{beramono}
+
+%% Japanese font
+\usepackage{luatexja-otf}
+\usepackage[match,deluxe,expert,noto-otf]{luatexja-preset}
+\renewcommand{\kanjifamilydefault}{\gtdefault}
+
+%% change fontsize of R code
+% https://stackoverflow.com/questions/38323331/code-chunk-font-size-in-beamer-with-knitr-and-latex
+\let\oldShaded\Shaded
+\let\endoldShaded\endShaded
+\renewenvironment{Shaded}{\footnotesize\oldShaded}{\endoldShaded}
+
+%% change fontsize of output
+\let\oldverbatim\verbatim
+\let\endoldverbatim\endverbatim
+\renewenvironment{verbatim}{\footnotesize\oldverbatim}{\endoldverbatim}
+
+%% Title font size
+\setbeamerfont{title}{size=\Huge, series=\bfseries}
+\setbeamerfont{section title}{size=\LARGE, series=\bfseries}
+\setbeamerfont{frametitle}{size=\Large, series=\bfseries}
