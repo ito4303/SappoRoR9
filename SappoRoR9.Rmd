@@ -5,7 +5,7 @@ date: "2019/3/2"
 output:
   beamer_presentation:
     latex_engine: lualatex
-    keep_tex: true
+    keep_tex: false
     includes:
       in_header: header.tex
 ---
@@ -78,6 +78,8 @@ egg: 複数のグラフを並べるなど
     - 2016-12-31 ver. 2.2.1
     - 2018-07-04 ver. 3.0.0
     - 2018-10-25 ver. 3.1.0
+
+# ggplot2の使い方
 
 ## ggplot関数
 
@@ -244,7 +246,7 @@ p3 + facet_wrap(~ Species) + theme(legend.position = "none")
 ```
 
 
-# ほかの種類のグラフは
+# いろいろなグラフ
 
 ## **`geom_*`** 関数
 
