@@ -147,7 +147,7 @@
 
 \begin{frame}{今回の発表に使用したコード・データ}
 
-\url{https://github.com/ito4303/esj65} で公開
+\url{https://github.com/ito4303/SappoRoR9} で公開
 
 \end{frame}
 
@@ -184,7 +184,7 @@
 \item
   関連パッケージもどんどんできている。
 \item
-  GGally, ggmcmc, ggmap, ggthemes, egg\dots
+  GGally, ggmcmc, ggmap, ggthemes, gghighlight, egg\dots
 \end{itemize}
 
 \end{frame}
@@ -212,153 +212,12 @@
     2016-11-15 ver. 2.2.0
   \item
     2016-12-31 ver. 2.2.1
+  \item
+    2018-07-04 ver. 3.0.0
+  \item
+    2018-10-25 ver. 3.1.0
   \end{itemize}
 \end{itemize}
-
-\end{frame}
-
-\begin{frame}{ここでの目的}
-
-\Large
-
-\begin{itemize}
-\item
-  得られたデータを可視化する。
-\item
-  データにあった解析
-\end{itemize}
-
-\end{frame}
-
-\begin{frame}{たとえば}
-
-\includegraphics[width=10.5cm]{SappoRoR9_files/figure-beamer/r_eq_0-1}
-
-どちらも\(r\)は0だが
-
-\end{frame}
-
-\begin{frame}{もうひとつの目的}
-
-\begin{itemize}
-\tightlist
-\item
-  グラフ作成に，手作業（コピー\&ペースト）をへらす。できれば
-  なくす。\footnote{baseグラフィックでも可能ですが。}
-\item
-  R（と，RStudioなど）で自動化する。
-\end{itemize}
-
-\Large\bfseries
-
-\begin{itemize}
-\tightlist
-\item
-  手作業に由来するまちがいをなくす。
-\item
-  どういう処理をしたか，コードに保存する。
-\item
-  Reproducible Research（の一部）
-\end{itemize}
-
-\normalsize\mdseries
-
-\begin{itemize}
-\tightlist
-\item
-  この発表資料も，R Markdownで作成して，RStudio（とLaTeX）で一括処理。
-\end{itemize}
-
-\end{frame}
-
-\section{ggplot2をつかってみる}\label{ggplot2}
-
-\begin{frame}[fragile]{インストールとパッケージのロード}
-
-\textbf{\texttt{ggplot2}}パッケージをインストールしておく。
-
-\begin{Shaded}
-\begin{Highlighting}[]
-\KeywordTok{install.packages}\NormalTok{(}\StringTok{"ggplot2"}\NormalTok{)}
-\end{Highlighting}
-\end{Shaded}
-
-パッケージをロードする。
-
-\begin{Shaded}
-\begin{Highlighting}[]
-\KeywordTok{library}\NormalTok{(ggplot2)}
-\end{Highlighting}
-\end{Shaded}
-
-あるいは，\textbf{\texttt{tidyverse}}パッケージをインストール，ロードしてもよい。
-
-\vspace{12pt}
-
-\textcolor{red}{\large\bfseries ggplot2はtidyデータと相性がいい。}
-
-\end{frame}
-
-\begin{frame}{使用するデータ}
-
-京都市内の広葉樹二次林の毎木調査データ。\footnote{Itô (2017) Biodiversity Data Journal 5: e11732. \\
-\hspace{14pt} https://doi.org/10.3897/BDJ.5.e11732 \\
-\hspace{14pt} https://doi.org/10.5061/dryad.7f399 \\
-\hspace{14pt} (CC0 https://creativecommons.org/publicdomain/zero/1.0/)}
-
-50m \(\times\) 50mの範囲で，アラカシとクロバイの幹の座標(X,
-Y)と胸高直径(DBH)を抽出する。
-
-\end{frame}
-
-\begin{frame}[fragile]{データの読み込みと整形}
-
-1993年と2014年のデータと，2014年だけのデータを用意する。
-
-\begin{Shaded}
-\begin{Highlighting}[]
-\KeywordTok{library}\NormalTok{(readr)}
-\KeywordTok{library}\NormalTok{(dplyr)}
-
-\NormalTok{github_dir <-}\StringTok{ }\KeywordTok{paste0}\NormalTok{(}\StringTok{"https://raw.githubusercontent.com/"}\NormalTok{,}
-                     \StringTok{"ito4303/esj65/master/"}\NormalTok{)}
-\NormalTok{s_data_file <-}\StringTok{ "Stem_data.csv"}
-\NormalTok{m_data_file <-}\StringTok{ "Measurement_data.csv"}
-\NormalTok{s_data <-}\StringTok{ }\KeywordTok{read_csv}\NormalTok{(}\KeywordTok{paste0}\NormalTok{(github_dir, s_data_file))}
-\NormalTok{m_data <-}\StringTok{ }\KeywordTok{read_csv}\NormalTok{(}\KeywordTok{paste0}\NormalTok{(github_dir, m_data_file))}
-\NormalTok{g_data <-}\StringTok{ }\KeywordTok{inner_join}\NormalTok{(m_data, s_data, }\DataTypeTok{by =} \StringTok{"Stem"}\NormalTok{) }\OperatorTok{%>%}
-\StringTok{  }\KeywordTok{filter}\NormalTok{(Year }\OperatorTok{%in%}\StringTok{ }\KeywordTok{c}\NormalTok{(}\DecValTok{1993}\NormalTok{, }\DecValTok{2014}\NormalTok{) }\OperatorTok{&}\StringTok{ }\NormalTok{X1 }\OperatorTok{<}\StringTok{ }\DecValTok{50} \OperatorTok{&}
-\StringTok{           }\NormalTok{Species }\OperatorTok{%in%}\StringTok{ }\KeywordTok{c}\NormalTok{(}\StringTok{"Quercus glauca"}\NormalTok{,}
-                          \StringTok{"Symplocos prunifolia"}\NormalTok{) }\OperatorTok{&}
-\StringTok{           }\OperatorTok{!}\KeywordTok{is.na}\NormalTok{(DBH)) }\OperatorTok{%>%}
-\StringTok{  }\KeywordTok{transmute}\NormalTok{(}\DataTypeTok{X =}\NormalTok{ X1, }\DataTypeTok{Y =}\NormalTok{ Y1, Year, Species, DBH)}
-\NormalTok{g_}\DecValTok{2014}\NormalTok{ <-}\StringTok{ }\KeywordTok{filter}\NormalTok{(g_data, Year }\OperatorTok{==}\StringTok{ }\DecValTok{2014}\NormalTok{)}
-\end{Highlighting}
-\end{Shaded}
-
-\end{frame}
-
-\begin{frame}[fragile]{データの確認}
-
-\begin{Shaded}
-\begin{Highlighting}[]
-\KeywordTok{head}\NormalTok{(g_}\DecValTok{2014}\NormalTok{)}
-\end{Highlighting}
-\end{Shaded}
-
-\begin{verbatim}
-## # A tibble: 6 x 5
-##       X     Y  Year Species                DBH
-##   <dbl> <dbl> <dbl> <chr>                <dbl>
-## 1   3.1   4    2014 Quercus glauca         3.8
-## 2   2.8   1.4  2014 Symplocos prunifolia  19.2
-## 3   0.1   7.3  2014 Symplocos prunifolia  17.9
-## 4   2.8   6.7  2014 Symplocos prunifolia  15  
-## 5   3.6   8.8  2014 Symplocos prunifolia  17.8
-## 6   3.5   6.2  2014 Symplocos prunifolia  12.1
-\end{verbatim}
-
-このデータから，樹幹位置図を作成する。
 
 \end{frame}
 
@@ -368,7 +227,7 @@ Y)と胸高直径(DBH)を抽出する。
 
 \begin{Shaded}
 \begin{Highlighting}[]
-\NormalTok{p <-}\StringTok{ }\KeywordTok{ggplot}\NormalTok{(}\DataTypeTok{data =}\NormalTok{ g_}\DecValTok{2014}\NormalTok{)}
+\NormalTok{p <-}\StringTok{ }\KeywordTok{ggplot}\NormalTok{(}\DataTypeTok{data =}\NormalTok{ iris)}
 \KeywordTok{print}\NormalTok{(p)}
 \end{Highlighting}
 \end{Shaded}
@@ -399,7 +258,7 @@ Y)と胸高直径(DBH)を抽出する。
 
 \begin{Shaded}
 \begin{Highlighting}[]
-\NormalTok{p }\OperatorTok{+}\StringTok{ }\KeywordTok{geom_point}\NormalTok{(}\DataTypeTok{mapping =} \KeywordTok{aes}\NormalTok{(}\DataTypeTok{x =}\NormalTok{ X, }\DataTypeTok{y =}\NormalTok{ Y))}
+\NormalTok{p }\OperatorTok{+}\StringTok{ }\KeywordTok{geom_point}\NormalTok{(}\DataTypeTok{mapping =} \KeywordTok{aes}\NormalTok{(}\DataTypeTok{x =}\NormalTok{ Sepal.Length, }\DataTypeTok{y =}\NormalTok{ Sepal.Width))}
 \end{Highlighting}
 \end{Shaded}
 
@@ -407,13 +266,14 @@ Y)と胸高直径(DBH)を抽出する。
 
 \end{frame}
 
-\begin{frame}[fragile]{樹種ごとに色をかえる}
+\begin{frame}[fragile]{種類ごとに色をかえる}
 
 \textbf{\texttt{aes}}関数の\texttt{colour}（\texttt{color}でもよい）引数を指定する。
 
 \begin{Shaded}
 \begin{Highlighting}[]
-\NormalTok{p }\OperatorTok{+}\StringTok{ }\KeywordTok{geom_point}\NormalTok{(}\DataTypeTok{mapping =} \KeywordTok{aes}\NormalTok{(}\DataTypeTok{x =}\NormalTok{ X, }\DataTypeTok{y =}\NormalTok{ Y, }\DataTypeTok{colour =}\NormalTok{ Species))}
+\NormalTok{p }\OperatorTok{+}\StringTok{ }\KeywordTok{geom_point}\NormalTok{(}\DataTypeTok{mapping =} \KeywordTok{aes}\NormalTok{(}\DataTypeTok{x =}\NormalTok{ Sepal.Length, }\DataTypeTok{y =}\NormalTok{ Sepal.Width,}
+                             \DataTypeTok{colour =}\NormalTok{ Species))}
 \end{Highlighting}
 \end{Shaded}
 
@@ -425,8 +285,9 @@ Y)と胸高直径(DBH)を抽出する。
 
 \begin{Shaded}
 \begin{Highlighting}[]
-\KeywordTok{ggplot}\NormalTok{(}\DataTypeTok{data =}\NormalTok{ g_}\DecValTok{2014}\NormalTok{,}
-       \DataTypeTok{mapping =} \KeywordTok{aes}\NormalTok{(}\DataTypeTok{x =}\NormalTok{ X, }\DataTypeTok{y =}\NormalTok{ Y, }\DataTypeTok{colour =}\NormalTok{ Species)) }\OperatorTok{+}
+\KeywordTok{ggplot}\NormalTok{(}\DataTypeTok{data =}\NormalTok{ iris,}
+       \DataTypeTok{mapping =} \KeywordTok{aes}\NormalTok{(}\DataTypeTok{x =}\NormalTok{ Sepal.Length, }\DataTypeTok{y =}\NormalTok{ Sepal.Width,}
+                     \DataTypeTok{colour =}\NormalTok{ Species)) }\OperatorTok{+}
 \StringTok{  }\KeywordTok{geom_point}\NormalTok{()}
 \end{Highlighting}
 \end{Shaded}
@@ -441,7 +302,8 @@ Y)と胸高直径(DBH)を抽出する。
 
 \begin{Shaded}
 \begin{Highlighting}[]
-\NormalTok{p }\OperatorTok{+}\StringTok{ }\KeywordTok{geom_point}\NormalTok{(}\DataTypeTok{mapping =} \KeywordTok{aes}\NormalTok{(}\DataTypeTok{x =}\NormalTok{ X, }\DataTypeTok{y =}\NormalTok{ Y), }\DataTypeTok{colour =} \StringTok{"red"}\NormalTok{)}
+\NormalTok{p }\OperatorTok{+}\StringTok{ }\KeywordTok{geom_point}\NormalTok{(}\DataTypeTok{mapping =} \KeywordTok{aes}\NormalTok{(}\DataTypeTok{x =}\NormalTok{ Sepal.Length, }\DataTypeTok{y =}\NormalTok{ Sepal.Width),}
+               \DataTypeTok{colour =} \StringTok{"red"}\NormalTok{)}
 \end{Highlighting}
 \end{Shaded}
 
@@ -449,33 +311,14 @@ Y)と胸高直径(DBH)を抽出する。
 
 \end{frame}
 
-\begin{frame}[fragile]{座標系}
-
-Y軸は実は下むきなので，軸を反転させる（\textbf{\texttt{scale\_y\_reverse}}関数）。
-また，X軸とY軸の長さをそろえる（\textbf{\texttt{coord\_fixed}}関数）。
-
-\textcolor{red}{\bfseries 軸の指定なども`+'演算子で追加する。}
-
-\begin{Shaded}
-\begin{Highlighting}[]
-\NormalTok{p2 <-}\StringTok{ }\KeywordTok{ggplot}\NormalTok{(g_}\DecValTok{2014}\NormalTok{) }\OperatorTok{+}\StringTok{ }\KeywordTok{xlim}\NormalTok{(}\DecValTok{0}\NormalTok{, }\DecValTok{50}\NormalTok{) }\OperatorTok{+}
-\StringTok{  }\KeywordTok{scale_y_reverse}\NormalTok{(}\DataTypeTok{limits =} \KeywordTok{c}\NormalTok{(}\DecValTok{50}\NormalTok{, }\DecValTok{0}\NormalTok{)) }\OperatorTok{+}\StringTok{ }\KeywordTok{coord_fixed}\NormalTok{(}\DataTypeTok{ratio =} \DecValTok{1}\NormalTok{)}
-\NormalTok{p2 }\OperatorTok{+}\StringTok{ }\KeywordTok{geom_point}\NormalTok{(}\DataTypeTok{mapping =} \KeywordTok{aes}\NormalTok{(}\DataTypeTok{x =}\NormalTok{ X, }\DataTypeTok{y =}\NormalTok{ Y, }\DataTypeTok{colour =}\NormalTok{ Species))}
-\end{Highlighting}
-\end{Shaded}
-
-\includegraphics[height=5cm]{SappoRoR9_files/figure-beamer/coord-1}
-
-\end{frame}
-
-\begin{frame}[fragile]{樹種ごとに点の形をかえる}
+\begin{frame}[fragile]{種類ごとに点の形をかえる}
 
 \textbf{\texttt{aes}}関数の\texttt{shape}引数を指定する。
 
 \begin{Shaded}
 \begin{Highlighting}[]
-\NormalTok{p2 }\OperatorTok{+}\StringTok{ }\KeywordTok{geom_point}\NormalTok{(}\KeywordTok{aes}\NormalTok{(}\DataTypeTok{x =}\NormalTok{ X, }\DataTypeTok{y =}\NormalTok{ Y,}
-                    \DataTypeTok{colour =}\NormalTok{ Species, }\DataTypeTok{shape =}\NormalTok{ Species))}
+\NormalTok{p }\OperatorTok{+}\StringTok{ }\KeywordTok{geom_point}\NormalTok{(}\KeywordTok{aes}\NormalTok{(}\DataTypeTok{x =}\NormalTok{ Sepal.Length, }\DataTypeTok{y =}\NormalTok{ Sepal.Width,}
+                   \DataTypeTok{colour =}\NormalTok{ Species, }\DataTypeTok{shape =}\NormalTok{ Species))}
 \end{Highlighting}
 \end{Shaded}
 
@@ -489,31 +332,14 @@ Y軸は実は下むきなので，軸を反転させる（\textbf{\texttt{scale\
 
 \begin{Shaded}
 \begin{Highlighting}[]
-\NormalTok{p2 }\OperatorTok{+}\StringTok{ }\KeywordTok{geom_point}\NormalTok{(}\KeywordTok{aes}\NormalTok{(}\DataTypeTok{x =}\NormalTok{ X, }\DataTypeTok{y =}\NormalTok{ Y,}
-                    \DataTypeTok{colour =}\NormalTok{ Species, }\DataTypeTok{shape =}\NormalTok{ Species),}
-                \DataTypeTok{size =} \DecValTok{4}\NormalTok{, }\DataTypeTok{alpha =} \FloatTok{0.7}\NormalTok{)}
+\NormalTok{p2 <-}\StringTok{ }\NormalTok{p }\OperatorTok{+}\StringTok{ }\KeywordTok{geom_point}\NormalTok{(}\KeywordTok{aes}\NormalTok{(}\DataTypeTok{x =}\NormalTok{ Sepal.Length, }\DataTypeTok{y =}\NormalTok{ Sepal.Width,}
+                         \DataTypeTok{colour =}\NormalTok{ Species, }\DataTypeTok{shape =}\NormalTok{ Species),}
+                     \DataTypeTok{size =} \DecValTok{4}\NormalTok{, }\DataTypeTok{alpha =} \FloatTok{0.7}\NormalTok{)}
+\KeywordTok{print}\NormalTok{(p2)}
 \end{Highlighting}
 \end{Shaded}
 
 \includegraphics[height=5cm]{SappoRoR9_files/figure-beamer/point_size-1}
-
-\end{frame}
-
-\begin{frame}[fragile]{DBHに応じて点の大きさを変える}
-
-\textbf{\texttt{aes}}関数の\texttt{size}引数を指定する。
-
-\begin{Shaded}
-\begin{Highlighting}[]
-\NormalTok{p3 <-}\StringTok{ }\NormalTok{p2 }\OperatorTok{+}
-\StringTok{  }\KeywordTok{geom_point}\NormalTok{(}\KeywordTok{aes}\NormalTok{(}\DataTypeTok{x =}\NormalTok{ X, }\DataTypeTok{y =}\NormalTok{ Y, }
-                 \DataTypeTok{colour =}\NormalTok{ Species, }\DataTypeTok{shape =}\NormalTok{ Species, }\DataTypeTok{size =}\NormalTok{ DBH),}
-             \DataTypeTok{alpha =} \FloatTok{0.7}\NormalTok{)}
-\KeywordTok{print}\NormalTok{(p3)}
-\end{Highlighting}
-\end{Shaded}
-
-\includegraphics[height=5cm]{SappoRoR9_files/figure-beamer/point_size2-1}
 
 \end{frame}
 
@@ -523,7 +349,7 @@ Y軸は実は下むきなので，軸を反転させる（\textbf{\texttt{scale\
 
 \begin{Shaded}
 \begin{Highlighting}[]
-\NormalTok{p3 }\OperatorTok{+}\StringTok{ }\KeywordTok{scale_colour_manual}\NormalTok{(}\DataTypeTok{values =} \KeywordTok{c}\NormalTok{(}\StringTok{"red"}\NormalTok{, }\StringTok{"#3355FF"}\NormalTok{))}
+\NormalTok{p2 }\OperatorTok{+}\StringTok{ }\KeywordTok{scale_colour_manual}\NormalTok{(}\DataTypeTok{values =} \KeywordTok{c}\NormalTok{(}\StringTok{"black"}\NormalTok{, }\StringTok{"red"}\NormalTok{, }\StringTok{"#3355FF"}\NormalTok{))}
 \end{Highlighting}
 \end{Shaded}
 
@@ -537,12 +363,12 @@ Y軸は実は下むきなので，軸を反転させる（\textbf{\texttt{scale\
 
 \begin{Shaded}
 \begin{Highlighting}[]
-\NormalTok{species <-}\StringTok{ }\KeywordTok{c}\NormalTok{(}\StringTok{"Quercus glauca"}\NormalTok{ =}\StringTok{ "アラカシ"}\NormalTok{,}
-             \StringTok{"Symplocos prunifolia"}\NormalTok{ =}\StringTok{ "クロバイ"}\NormalTok{)}
-\NormalTok{p4 <-}\StringTok{ }\NormalTok{p3 }\OperatorTok{+}\StringTok{ }\KeywordTok{labs}\NormalTok{(}\DataTypeTok{x =} \StringTok{"X軸 (m)"}\NormalTok{, }\DataTypeTok{y =} \StringTok{"Y軸 (m)"}\NormalTok{) }\OperatorTok{+}
-\StringTok{  }\KeywordTok{scale_colour_discrete}\NormalTok{(}\DataTypeTok{name =} \StringTok{"種"}\NormalTok{, }\DataTypeTok{labels =}\NormalTok{ species) }\OperatorTok{+}
-\StringTok{  }\KeywordTok{scale_shape_discrete}\NormalTok{(}\DataTypeTok{name =} \StringTok{"種"}\NormalTok{, }\DataTypeTok{labels =}\NormalTok{ species) }\OperatorTok{+}
-\StringTok{  }\KeywordTok{scale_size_continuous}\NormalTok{(}\DataTypeTok{name =} \StringTok{"胸高直径 (cm)"}\NormalTok{) }\OperatorTok{+}
+\NormalTok{spp <-}\StringTok{ }\KeywordTok{c}\NormalTok{(}\StringTok{"ヒオウギアヤメ"}\NormalTok{, }\StringTok{"イリス・ヴェルシカラー"}\NormalTok{,}
+         \StringTok{"イリス・ヴァージニカ"}\NormalTok{)}
+\NormalTok{p3 <-}\StringTok{ }\NormalTok{p2 }\OperatorTok{+}\StringTok{ }\KeywordTok{labs}\NormalTok{(}\DataTypeTok{x =} \StringTok{"萼長 (cm)"}\NormalTok{, }\DataTypeTok{y =} \StringTok{"萼幅(cm)"}\NormalTok{) }\OperatorTok{+}
+\StringTok{  }\KeywordTok{scale_colour_discrete}\NormalTok{(}\DataTypeTok{name =} \StringTok{"種"}\NormalTok{, }\DataTypeTok{labels =}\NormalTok{ spp) }\OperatorTok{+}
+\StringTok{  }\KeywordTok{scale_shape_discrete}\NormalTok{(}\DataTypeTok{name =} \StringTok{"種"}\NormalTok{, }\DataTypeTok{labels =}\NormalTok{ spp) }\OperatorTok{+}
+\StringTok{  }\KeywordTok{scale_size_continuous}\NormalTok{(}\DataTypeTok{name =} \StringTok{"萼長 (cm)"}\NormalTok{) }\OperatorTok{+}
 \StringTok{  }\KeywordTok{theme}\NormalTok{(}\DataTypeTok{text =} \KeywordTok{element_text}\NormalTok{(}\DataTypeTok{family =} \StringTok{"IPAexGothic"}\NormalTok{, }\DataTypeTok{size =} \DecValTok{10}\NormalTok{))}
 \end{Highlighting}
 \end{Shaded}
@@ -566,7 +392,7 @@ Windowsでは\textbf{\texttt{windowsFonts}}関数でフォントの設定をし�
 
 \begin{Shaded}
 \begin{Highlighting}[]
-\KeywordTok{ggsave}\NormalTok{(}\StringTok{"p4.pdf"}\NormalTok{, }\DataTypeTok{device =}\NormalTok{ cairo_pdf,}
+\KeywordTok{ggsave}\NormalTok{(}\StringTok{"iris.pdf"}\NormalTok{, }\DataTypeTok{device =}\NormalTok{ cairo_pdf,}
        \DataTypeTok{width =} \DecValTok{12}\NormalTok{, }\DataTypeTok{height =} \DecValTok{8}\NormalTok{, }\DataTypeTok{units =} \StringTok{"cm"}\NormalTok{)}
 \end{Highlighting}
 \end{Shaded}
@@ -589,8 +415,7 @@ macOSでは，\textbf{\texttt{ggsave}}関数のほか，\textbf{\texttt{quartz.s
 
 \begin{Shaded}
 \begin{Highlighting}[]
-\NormalTok{p4 }\OperatorTok{+}\StringTok{ }\KeywordTok{theme_bw}\NormalTok{(}\DataTypeTok{base_family =} \StringTok{"IPAexGothic"}\NormalTok{,}
-              \DataTypeTok{base_size =} \DecValTok{12}\NormalTok{)}
+\NormalTok{p3 }\OperatorTok{+}\StringTok{ }\KeywordTok{theme_bw}\NormalTok{(}\DataTypeTok{base_family =} \StringTok{"IPAexGothic"}\NormalTok{)}
 \end{Highlighting}
 \end{Shaded}
 
@@ -602,12 +427,24 @@ macOSでは，\textbf{\texttt{ggsave}}関数のほか，\textbf{\texttt{quartz.s
 
 \begin{Shaded}
 \begin{Highlighting}[]
-\NormalTok{p4 }\OperatorTok{+}\StringTok{ }\KeywordTok{theme_classic}\NormalTok{(}\DataTypeTok{base_family =} \StringTok{"NotoSansCJKjp-Regular"}\NormalTok{,}
-                   \DataTypeTok{base_size =} \DecValTok{12}\NormalTok{)}
+\NormalTok{p3 }\OperatorTok{+}\StringTok{ }\KeywordTok{theme_classic}\NormalTok{(}\DataTypeTok{base_family =} \StringTok{"IPAexGothic"}\NormalTok{)}
 \end{Highlighting}
 \end{Shaded}
 
 \includegraphics[height=6cm]{SappoRoR9_files/figure-beamer/theme_classic-1}
+
+\end{frame}
+
+\begin{frame}[fragile]{themeをかえる(3)}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{library}\NormalTok{(ggthemes)}
+\NormalTok{p2 }\OperatorTok{+}\StringTok{ }\KeywordTok{theme_excel}\NormalTok{()}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics[height=6cm]{SappoRoR9_files/figure-beamer/theme_excel-1}
 
 \end{frame}
 
@@ -617,46 +454,11 @@ macOSでは，\textbf{\texttt{ggsave}}関数のほか，\textbf{\texttt{quartz.s
 
 \begin{Shaded}
 \begin{Highlighting}[]
-\NormalTok{p4 }\OperatorTok{+}\StringTok{ }\KeywordTok{facet_wrap}\NormalTok{(}\OperatorTok{~}\StringTok{ }\NormalTok{Species) }\OperatorTok{+}\StringTok{ }\KeywordTok{theme}\NormalTok{(}\DataTypeTok{legend.position =} \StringTok{"none"}\NormalTok{)}
+\NormalTok{p3 }\OperatorTok{+}\StringTok{ }\KeywordTok{facet_wrap}\NormalTok{(}\OperatorTok{~}\StringTok{ }\NormalTok{Species) }\OperatorTok{+}\StringTok{ }\KeywordTok{theme}\NormalTok{(}\DataTypeTok{legend.position =} \StringTok{"none"}\NormalTok{)}
 \end{Highlighting}
 \end{Shaded}
 
 \includegraphics[height=5.5cm]{SappoRoR9_files/figure-beamer/facet-1}
-
-\end{frame}
-
-\begin{frame}[fragile]{facet\_grid: 縦横に分割}
-
-\begin{Shaded}
-\begin{Highlighting}[]
-\KeywordTok{ggplot}\NormalTok{(g_data, }\KeywordTok{aes}\NormalTok{(X, Y, }\DataTypeTok{colour =}\NormalTok{ Species, }\DataTypeTok{size =}\NormalTok{ DBH)) }\OperatorTok{+}
-\StringTok{  }\KeywordTok{geom_point}\NormalTok{(}\DataTypeTok{alpha =} \FloatTok{0.7}\NormalTok{) }\OperatorTok{+}\StringTok{ }\KeywordTok{coord_fixed}\NormalTok{() }\OperatorTok{+}\StringTok{ }\KeywordTok{scale_y_reverse}\NormalTok{() }\OperatorTok{+}
-\StringTok{  }\KeywordTok{scale_colour_discrete}\NormalTok{(}\DataTypeTok{guide =} \StringTok{"none"}\NormalTok{) }\OperatorTok{+}
-\StringTok{  }\KeywordTok{facet_grid}\NormalTok{(Year }\OperatorTok{~}\StringTok{ }\NormalTok{Species)}
-\end{Highlighting}
-\end{Shaded}
-
-\includegraphics[height=5.5cm]{SappoRoR9_files/figure-beamer/facet_grid-1}
-
-\end{frame}
-
-\begin{frame}[fragile]{ここまでのまとめ}
-
-\Large
-
-\begin{itemize}
-\tightlist
-\item
-  \texttt{ggplot}関数でオブジェクト生成。
-\item
-  mapping引数に指定する\texttt{aes}関数で，データフレームのどのフィールドをどのグラフ要素に割り当てるかを指定する。
-\item
-  \texttt{geom\_*}関数で描画（レイヤー追加）。
-\item
-  テーマ，軸，Facetなどをそれぞれの関数で設定する。
-\item
-  パーツや設定を`+'演算子で追加していって，グラフを完成させる。
-\end{itemize}
 
 \end{frame}
 
@@ -683,9 +485,9 @@ macOSでは，\textbf{\texttt{ggsave}}関数のほか，\textbf{\texttt{quartz.s
 \item
   \textbf{\texttt{geom\_polygon}}
 \item
-  \textbf{\texttt{geom\_smooth}}
-\item
   \textbf{\texttt{geom\_ribbon}}
+\item
+  \textbf{\texttt{geom\_smooth}}
 \item
   \textbf{\texttt{geom\_tile}}
 \end{itemize}
@@ -694,60 +496,15 @@ macOSでは，\textbf{\texttt{ggsave}}関数のほか，\textbf{\texttt{quartz.s
 
 \end{frame}
 
-\begin{frame}[fragile]{次のデータ}
-
-京都市内の広葉樹二次林で採取したアラカシの年輪データ。
-\footnote{Itô and Sumida (2017) Ecol. Res. 32:105-105. \\
-\hspace{14pt} https:doi.org/10.1007/s11284-016-1424-1 \\
-\hspace{14pt} (CC-BY 4.0 https://creativecommons.org/licenses/by/4.0/)}
-
-地際の各年の直径(mm)を使用。
-
-\begin{Shaded}
-\begin{Highlighting}[]
-\NormalTok{q_data_file <-}\StringTok{ "Tree_ring_data.csv"}
-\NormalTok{q_data <-}\StringTok{ }\KeywordTok{read_csv}\NormalTok{(}\KeywordTok{paste0}\NormalTok{(github_dir, q_data_file)) }\OperatorTok{%>%}
-\StringTok{  }\KeywordTok{filter}\NormalTok{(Height }\OperatorTok{==}\StringTok{ }\DecValTok{0}\NormalTok{) }\OperatorTok{%>%}
-\StringTok{  }\KeywordTok{mutate}\NormalTok{(}\DataTypeTok{No =} \KeywordTok{factor}\NormalTok{(No),}
-         \DataTypeTok{Year =} \KeywordTok{as.integer}\NormalTok{(}\DecValTok{1994} \OperatorTok{-}\StringTok{ }\NormalTok{Year }\OperatorTok{+}\StringTok{ }\DecValTok{1}\NormalTok{)) }\OperatorTok{%>%}
-\StringTok{  }\KeywordTok{select}\NormalTok{(No, Year, Diameter)}
-\end{Highlighting}
-\end{Shaded}
-
-\end{frame}
-
-\begin{frame}[fragile]{データの確認}
-
-\begin{Shaded}
-\begin{Highlighting}[]
-\KeywordTok{head}\NormalTok{(q_data)}
-\end{Highlighting}
-\end{Shaded}
-
-\begin{verbatim}
-## # A tibble: 6 x 3
-##   No     Year Diameter
-##   <fct> <int>    <dbl>
-## 1 3      1994     29.2
-## 2 3      1993     24.8
-## 3 3      1992     21.8
-## 4 3      1991     18.3
-## 5 3      1990     16.2
-## 6 3      1989     14.3
-\end{verbatim}
-
-\end{frame}
-
 \begin{frame}[fragile]{折れ線グラフ}
 
 \textbf{\texttt{geom\_line}}関数
 
-No.3の幹のみを抽出して表示。
+ナイル川のデータ
 
 \begin{Shaded}
 \begin{Highlighting}[]
-\NormalTok{p <-}\StringTok{ }\KeywordTok{filter}\NormalTok{(q_data, No }\OperatorTok{==}\StringTok{ }\DecValTok{3}\NormalTok{) }\OperatorTok{%>%}\StringTok{ }\KeywordTok{ggplot}\NormalTok{(}\KeywordTok{aes}\NormalTok{(Year, Diameter))}
-\NormalTok{p }\OperatorTok{+}\StringTok{ }\KeywordTok{geom_line}\NormalTok{()}
+\NormalTok{(p <-}\StringTok{ }\KeywordTok{ggplot}\NormalTok{(df_Nile, }\KeywordTok{aes}\NormalTok{(}\DataTypeTok{x =}\NormalTok{ Year, }\DataTypeTok{y =}\NormalTok{ Level)) }\OperatorTok{+}\StringTok{ }\KeywordTok{geom_line}\NormalTok{())}
 \end{Highlighting}
 \end{Shaded}
 
@@ -769,252 +526,17 @@ No.3の幹のみを抽出して表示。
 
 \end{frame}
 
-\begin{frame}[fragile]{データ全体をgeom\_lineで表示}
+\begin{frame}[fragile]{平滑化曲線}
+
+\textbf{\texttt{geom\_smooth}}を使用。
 
 \begin{Shaded}
 \begin{Highlighting}[]
-\KeywordTok{ggplot}\NormalTok{(q_data) }\OperatorTok{+}\StringTok{ }\KeywordTok{geom_line}\NormalTok{(}\KeywordTok{aes}\NormalTok{(Year, Diameter))}
+\NormalTok{p }\OperatorTok{+}\StringTok{ }\KeywordTok{geom_line}\NormalTok{(}\DataTypeTok{linetype =} \DecValTok{2}\NormalTok{) }\OperatorTok{+}\StringTok{ }\KeywordTok{geom_smooth}\NormalTok{(}\DataTypeTok{method =} \StringTok{"loess"}\NormalTok{)}
 \end{Highlighting}
 \end{Shaded}
 
 \includegraphics[height=5.5cm]{SappoRoR9_files/figure-beamer/geom_line3-1}
-
-うまくいかない。
-
-\end{frame}
-
-\begin{frame}[fragile]{groupを指定}
-
-\begin{Shaded}
-\begin{Highlighting}[]
-\KeywordTok{ggplot}\NormalTok{(q_data) }\OperatorTok{+}\StringTok{ }\KeywordTok{geom_line}\NormalTok{(}\KeywordTok{aes}\NormalTok{(Year, Diameter, }\DataTypeTok{group =}\NormalTok{ No))}
-\end{Highlighting}
-\end{Shaded}
-
-\includegraphics[height=5.5cm]{SappoRoR9_files/figure-beamer/geom_line5-1}
-
-\end{frame}
-
-\begin{frame}[fragile]{colourを指定}
-
-\begin{Shaded}
-\begin{Highlighting}[]
-\KeywordTok{ggplot}\NormalTok{(q_data) }\OperatorTok{+}\StringTok{ }\KeywordTok{geom_line}\NormalTok{(}\KeywordTok{aes}\NormalTok{(Year, Diameter, }\DataTypeTok{colour =}\NormalTok{ No)) }\OperatorTok{+}
-\StringTok{   }\KeywordTok{guides}\NormalTok{(}\DataTypeTok{colour =} \KeywordTok{guide_legend}\NormalTok{(}\DataTypeTok{ncol =} \DecValTok{2}\NormalTok{))}
-\end{Highlighting}
-\end{Shaded}
-
-\includegraphics[height=5.5cm]{SappoRoR9_files/figure-beamer/geom_line4-1}
-
-\end{frame}
-
-\begin{frame}[fragile]{加工したプロットを重ねる}
-
-アラカシNo.21の各年の肥大成長量を用意する。
-
-\begin{Shaded}
-\begin{Highlighting}[]
-\NormalTok{q21 <-}\StringTok{ }\KeywordTok{filter}\NormalTok{(q_data, No }\OperatorTok{==}\StringTok{ }\DecValTok{21}\NormalTok{) }\OperatorTok{%>%}
-\StringTok{  }\KeywordTok{mutate}\NormalTok{(}\DataTypeTok{Growth =}\NormalTok{ Diameter }\OperatorTok{-}\StringTok{ }\KeywordTok{lead}\NormalTok{(Diameter)) }\OperatorTok{%>%}
-\StringTok{  }\KeywordTok{filter}\NormalTok{(}\OperatorTok{!}\KeywordTok{is.na}\NormalTok{(Growth)) }\OperatorTok{%>%}\StringTok{ }\KeywordTok{arrange}\NormalTok{(Year)}
-\NormalTok{p1 <-}\StringTok{ }\KeywordTok{ggplot}\NormalTok{(q21) }\OperatorTok{+}\StringTok{ }\KeywordTok{geom_line}\NormalTok{(}\KeywordTok{aes}\NormalTok{(Year, Growth))}
-\KeywordTok{print}\NormalTok{(p1)}
-\end{Highlighting}
-\end{Shaded}
-
-\includegraphics[height=4.5cm]{SappoRoR9_files/figure-beamer/q_data3-1}
-
-\end{frame}
-
-\begin{frame}[fragile]{平滑化した曲線を重ねる}
-
-\textbf{\texttt{geom\_smooth}}関数で平滑化できる。\\
-\textbf{\texttt{geom\_smooth}}\texttt{(method\ =\ "lm")}とすると直線回帰。
-
-\begin{Shaded}
-\begin{Highlighting}[]
-\NormalTok{p1 }\OperatorTok{+}\StringTok{ }\KeywordTok{geom_smooth}\NormalTok{(}\KeywordTok{aes}\NormalTok{(Year, Growth), }\DataTypeTok{method =} \StringTok{"loess"}\NormalTok{)}
-\end{Highlighting}
-\end{Shaded}
-
-\includegraphics[height=5.5cm]{SappoRoR9_files/figure-beamer/geom_smooth-1}
-
-\end{frame}
-
-\begin{frame}[fragile]{別のデータフレームから(1)}
-
-dlmパッケージを使用して，カルマンフィルタでフィルタリングした値と95\%信頼区間をデータフレーム\texttt{kf}に格納する。
-
-\begin{Shaded}
-\begin{Highlighting}[]
-\KeywordTok{library}\NormalTok{(dlm)}
-\NormalTok{build <-}\StringTok{ }\ControlFlowTok{function}\NormalTok{(theta) \{}
-  \KeywordTok{dlmModPoly}\NormalTok{(}\DataTypeTok{order =} \DecValTok{1}\NormalTok{, }\DataTypeTok{dV =}\NormalTok{ theta[}\DecValTok{1}\NormalTok{], }\DataTypeTok{dW =}\NormalTok{ theta[}\DecValTok{2}\NormalTok{])}
-\NormalTok{\}}
-\NormalTok{fit <-}\StringTok{ }\KeywordTok{dlmMLE}\NormalTok{(q21}\OperatorTok{$}\NormalTok{Growth, }\DataTypeTok{parm =} \KeywordTok{c}\NormalTok{(}\DecValTok{1}\NormalTok{, }\DecValTok{1}\NormalTok{), }
-              \DataTypeTok{build =}\NormalTok{ build, }\DataTypeTok{lower =} \KeywordTok{c}\NormalTok{(}\DecValTok{0}\NormalTok{, }\DecValTok{0}\NormalTok{))}
-\NormalTok{model <-}\StringTok{ }\KeywordTok{dlmModPoly}\NormalTok{(}\DataTypeTok{order =} \DecValTok{1}\NormalTok{,}
-                    \DataTypeTok{dV =}\NormalTok{ fit}\OperatorTok{$}\NormalTok{par[}\DecValTok{1}\NormalTok{], }\DataTypeTok{dW =}\NormalTok{ fit}\OperatorTok{$}\NormalTok{par[}\DecValTok{2}\NormalTok{])}
-\NormalTok{filter <-}\StringTok{ }\KeywordTok{dlmFilter}\NormalTok{(q21}\OperatorTok{$}\NormalTok{Growth, model)}
-\NormalTok{kf <-}\StringTok{ }\KeywordTok{data.frame}\NormalTok{(}\DataTypeTok{Year =}\NormalTok{ q21}\OperatorTok{$}\NormalTok{Year,}
-                 \DataTypeTok{Filter =} \KeywordTok{dropFirst}\NormalTok{(filter}\OperatorTok{$}\NormalTok{m)) }\OperatorTok{%>%}
-\StringTok{  }\KeywordTok{mutate}\NormalTok{(}\DataTypeTok{sd =} \KeywordTok{dlmSvd2var}\NormalTok{(filter}\OperatorTok{$}\NormalTok{U.C, filter}\OperatorTok{$}\NormalTok{D.C) }\OperatorTok{%>%}
-\StringTok{           }\KeywordTok{unlist}\NormalTok{() }\OperatorTok{%>%}
-\StringTok{           }\KeywordTok{dropFirst}\NormalTok{()) }\OperatorTok{%>%}
-\StringTok{  }\KeywordTok{mutate}\NormalTok{(}\DataTypeTok{Lower =} \KeywordTok{qnorm}\NormalTok{(}\FloatTok{0.025}\NormalTok{, Filter, sd),}
-         \DataTypeTok{Upper =} \KeywordTok{qnorm}\NormalTok{(}\FloatTok{0.975}\NormalTok{, Filter, sd))}
-\end{Highlighting}
-\end{Shaded}
-
-\end{frame}
-
-\begin{frame}[fragile]{別のデータフレームから(2)}
-
-カルマンフィルタでフィルタリングした値（赤線）と95\%信頼区間（うすい赤色の領域）を重ねて
-表示する。
-
-\begin{Shaded}
-\begin{Highlighting}[]
-\NormalTok{p1 }\OperatorTok{+}\StringTok{ }\KeywordTok{geom_line}\NormalTok{(}\DataTypeTok{data =}\NormalTok{ kf, }\KeywordTok{aes}\NormalTok{(Year, Filter), }\DataTypeTok{colour =} \StringTok{"red"}\NormalTok{) }\OperatorTok{+}
-\StringTok{  }\KeywordTok{geom_ribbon}\NormalTok{(}\DataTypeTok{data =}\NormalTok{ kf, }\KeywordTok{aes}\NormalTok{(Year, }\DataTypeTok{ymin =}\NormalTok{ Lower, }\DataTypeTok{ymax =}\NormalTok{ Upper),}
-              \DataTypeTok{fill =} \StringTok{"red"}\NormalTok{, }\DataTypeTok{alpha =} \FloatTok{0.3}\NormalTok{)}
-\end{Highlighting}
-\end{Shaded}
-
-\includegraphics[height=4.5cm]{SappoRoR9_files/figure-beamer/geom_ribbon-1}
-
-\end{frame}
-
-\begin{frame}[fragile]{箱ひげ図}
-
-アヤメのデータ \texttt{data(iris)} を使用。
-
-\textbf{\texttt{geom\_boxplot}}関数
-
-\begin{Shaded}
-\begin{Highlighting}[]
-\KeywordTok{ggplot}\NormalTok{(iris) }\OperatorTok{+}\StringTok{ }\KeywordTok{geom_boxplot}\NormalTok{(}\KeywordTok{aes}\NormalTok{(Species, Sepal.Width))}
-\end{Highlighting}
-\end{Shaded}
-
-\includegraphics[height=5.5cm]{SappoRoR9_files/figure-beamer/boxplot-1}
-
-\end{frame}
-
-\begin{frame}[fragile]{X軸とY軸をいれかえる}
-
-\textbf{\texttt{coor\_flip}}関数
-
-\begin{Shaded}
-\begin{Highlighting}[]
-\KeywordTok{ggplot}\NormalTok{(iris) }\OperatorTok{+}\StringTok{ }\KeywordTok{geom_boxplot}\NormalTok{(}\KeywordTok{aes}\NormalTok{(Species, Sepal.Width)) }\OperatorTok{+}
-\StringTok{  }\KeywordTok{coord_flip}\NormalTok{()}
-\end{Highlighting}
-\end{Shaded}
-
-\includegraphics[height=5.5cm]{SappoRoR9_files/figure-beamer/boxplot2-1}
-
-\end{frame}
-
-\begin{frame}[fragile]{ヒストグラム(1)}
-
-\textbf{\texttt{geom\_histogram}}関数
-
-\texttt{fill}引数で塗りつぶしの指定。
-
-\begin{Shaded}
-\begin{Highlighting}[]
-\KeywordTok{ggplot}\NormalTok{(iris) }\OperatorTok{+}
-\StringTok{  }\KeywordTok{geom_histogram}\NormalTok{(}\KeywordTok{aes}\NormalTok{(Sepal.Length, }\DataTypeTok{fill =}\NormalTok{ Species),}
-                 \DataTypeTok{binwidth =} \FloatTok{0.5}\NormalTok{)}
-\end{Highlighting}
-\end{Shaded}
-
-\includegraphics[height=5cm]{SappoRoR9_files/figure-beamer/histogram-1}
-
-\end{frame}
-
-\begin{frame}[fragile]{ヒストグラム(2)}
-
-\texttt{colour}と\texttt{fill}を別に指定。
-
-\begin{Shaded}
-\begin{Highlighting}[]
-\KeywordTok{ggplot}\NormalTok{(iris) }\OperatorTok{+}
-\StringTok{  }\KeywordTok{geom_histogram}\NormalTok{(}\KeywordTok{aes}\NormalTok{(Sepal.Length, }\DataTypeTok{fill =}\NormalTok{ Species),}
-                 \DataTypeTok{colour =} \StringTok{"grey10"}\NormalTok{, }\DataTypeTok{binwidth =} \FloatTok{0.5}\NormalTok{)}
-\end{Highlighting}
-\end{Shaded}
-
-\includegraphics[height=5cm]{SappoRoR9_files/figure-beamer/histogram2-1}
-
-\end{frame}
-
-\begin{frame}[fragile]{ヒストグラム(3)}
-
-\texttt{position\ =\ "dodge"}: 積み重ねずに ずらす。
-
-\begin{Shaded}
-\begin{Highlighting}[]
-\KeywordTok{ggplot}\NormalTok{(iris) }\OperatorTok{+}
-\StringTok{  }\KeywordTok{geom_histogram}\NormalTok{(}\KeywordTok{aes}\NormalTok{(Sepal.Length, }\DataTypeTok{fill =}\NormalTok{ Species),}
-                 \DataTypeTok{binwidth =} \FloatTok{0.5}\NormalTok{, }\DataTypeTok{position =} \StringTok{"dodge"}\NormalTok{)}
-\end{Highlighting}
-\end{Shaded}
-
-\includegraphics[height=5.5cm]{SappoRoR9_files/figure-beamer/histogram3-1}
-
-\end{frame}
-
-\begin{frame}[fragile]{密度}
-
-\textbf{\texttt{geom\_density}}関数
-
-\begin{Shaded}
-\begin{Highlighting}[]
-\NormalTok{p <-}\StringTok{ }\KeywordTok{ggplot}\NormalTok{(iris, }\KeywordTok{aes}\NormalTok{(Sepal.Length, }\DataTypeTok{fill =}\NormalTok{ Species))}
-\NormalTok{p }\OperatorTok{+}\StringTok{ }\KeywordTok{geom_density}\NormalTok{(}\DataTypeTok{alpha =} \FloatTok{0.5}\NormalTok{)}
-\end{Highlighting}
-\end{Shaded}
-
-\includegraphics[height=5.5cm]{SappoRoR9_files/figure-beamer/geom_density-1}
-
-\end{frame}
-
-\begin{frame}[fragile]{注釈をつける}
-
-\textbf{\texttt{annotate}}関数
-
-\begin{Shaded}
-\begin{Highlighting}[]
-\NormalTok{x_pos <-}\StringTok{ }\KeywordTok{c}\NormalTok{(}\FloatTok{5.0}\NormalTok{, }\FloatTok{5.7}\NormalTok{, }\FloatTok{6.5}\NormalTok{); y_pos <-}\StringTok{ }\KeywordTok{c}\NormalTok{(}\FloatTok{0.6}\NormalTok{, }\FloatTok{0.8}\NormalTok{, }\FloatTok{0.8}\NormalTok{)}
-\NormalTok{labels <-}\StringTok{ }\KeywordTok{c}\NormalTok{(}\StringTok{"setosa"}\NormalTok{, }\StringTok{"versicolor"}\NormalTok{, }\StringTok{"virginica"}\NormalTok{)}
-\NormalTok{p }\OperatorTok{+}\StringTok{ }\KeywordTok{geom_density}\NormalTok{(}\DataTypeTok{alpha =} \FloatTok{0.5}\NormalTok{, }\DataTypeTok{show.legend =} \OtherTok{FALSE}\NormalTok{) }\OperatorTok{+}
-\StringTok{  }\KeywordTok{annotate}\NormalTok{(}\StringTok{"text"}\NormalTok{, }\DataTypeTok{x =}\NormalTok{ x_pos, }\DataTypeTok{y =}\NormalTok{ y_pos, }\DataTypeTok{label =}\NormalTok{ labels,}
-           \DataTypeTok{family =} \StringTok{"Helvetica"}\NormalTok{)}
-\end{Highlighting}
-\end{Shaded}
-
-\includegraphics[height=5cm]{SappoRoR9_files/figure-beamer/annotate-1}
-
-\end{frame}
-
-\begin{frame}[fragile]{数式}
-
-\texttt{parse\ =\ TRUE}で数式を解釈して表示
-
-\begin{Shaded}
-\begin{Highlighting}[]
-\KeywordTok{ggplot}\NormalTok{(}\KeywordTok{data.frame}\NormalTok{(}\DataTypeTok{x =} \KeywordTok{seq}\NormalTok{(}\OperatorTok{-}\DecValTok{5}\NormalTok{, }\DecValTok{5}\NormalTok{, }\FloatTok{0.01}\NormalTok{)), }\KeywordTok{aes}\NormalTok{(x)) }\OperatorTok{+}
-\StringTok{  }\KeywordTok{stat_function}\NormalTok{(}\DataTypeTok{fun =} \ControlFlowTok{function}\NormalTok{(x) \{}\DecValTok{1} \OperatorTok{/}\StringTok{ }\NormalTok{(}\DecValTok{1} \OperatorTok{+}\StringTok{ }\KeywordTok{exp}\NormalTok{(}\OperatorTok{-}\NormalTok{x))\}) }\OperatorTok{+}
-\StringTok{  }\KeywordTok{annotate}\NormalTok{(}\StringTok{"text"}\NormalTok{, }\DataTypeTok{x =} \OperatorTok{-}\DecValTok{5}\NormalTok{, }\DataTypeTok{y =} \FloatTok{0.875}\NormalTok{,}
-      \DataTypeTok{label =} \KeywordTok{paste}\NormalTok{(}\StringTok{"italic(y) == frac(1,"}\NormalTok{, }
-                    \StringTok{"1 + exp(-(beta[0] + beta[1]*italic(x))))"}\NormalTok{),}
-      \DataTypeTok{parse =} \OtherTok{TRUE}\NormalTok{, }\DataTypeTok{size =} \DecValTok{4}\NormalTok{, }\DataTypeTok{hjust =} \DecValTok{0}\NormalTok{)}
-\end{Highlighting}
-\end{Shaded}
-
-\includegraphics[height=4.5cm]{SappoRoR9_files/figure-beamer/expression-1}
 
 \end{frame}
 
@@ -1057,99 +579,36 @@ dlmパッケージを使用して，カルマンフィルタでフィルタリ�
 
 \end{frame}
 
-\begin{frame}[fragile]{3次元のデータ}
+\begin{frame}[fragile]{関数のグラフと数式}
+
+\textbf{stat\_function}で関数を指定。 \textbf{\texttt{annotate}}で注釈。
+\texttt{parse\ =\ TRUE}で数式を解釈して表示。
 
 \begin{Shaded}
 \begin{Highlighting}[]
-\NormalTok{r <-}\StringTok{ }\ControlFlowTok{function}\NormalTok{(x, y) (}\OperatorTok{-}\FloatTok{0.00002} \OperatorTok{*}\StringTok{ }\NormalTok{(x }\OperatorTok{-}\StringTok{ }\DecValTok{40}\NormalTok{)}\OperatorTok{^}\DecValTok{2} \OperatorTok{+}\StringTok{ }\FloatTok{0.05}\NormalTok{) }\OperatorTok{*}\StringTok{ }\FloatTok{0.04} \OperatorTok{*}\StringTok{ }\NormalTok{y}
-\NormalTok{raster_data <-}\StringTok{ }\KeywordTok{expand.grid}\NormalTok{(}\DataTypeTok{x =} \DecValTok{0}\OperatorTok{:}\DecValTok{100}\NormalTok{, }\DataTypeTok{y =} \DecValTok{0}\OperatorTok{:}\DecValTok{100}\NormalTok{) }\OperatorTok{%>%}
-\StringTok{  }\KeywordTok{mutate}\NormalTok{(}\DataTypeTok{z =} \KeywordTok{r}\NormalTok{(x, y))}
-\KeywordTok{print}\NormalTok{(raster_data[}\DecValTok{5000}\OperatorTok{:}\DecValTok{5005}\NormalTok{, ])}
+\KeywordTok{ggplot}\NormalTok{(}\KeywordTok{data.frame}\NormalTok{(}\DataTypeTok{x =} \KeywordTok{seq}\NormalTok{(}\OperatorTok{-}\DecValTok{5}\NormalTok{, }\DecValTok{5}\NormalTok{, }\FloatTok{0.01}\NormalTok{)), }\KeywordTok{aes}\NormalTok{(x)) }\OperatorTok{+}
+\StringTok{  }\KeywordTok{stat_function}\NormalTok{(}\DataTypeTok{fun =} \ControlFlowTok{function}\NormalTok{(x) \{}\DecValTok{1} \OperatorTok{/}\StringTok{ }\NormalTok{(}\DecValTok{1} \OperatorTok{+}\StringTok{ }\KeywordTok{exp}\NormalTok{(}\OperatorTok{-}\NormalTok{x))\}) }\OperatorTok{+}
+\StringTok{  }\KeywordTok{annotate}\NormalTok{(}\StringTok{"text"}\NormalTok{, }\DataTypeTok{x =} \OperatorTok{-}\DecValTok{5}\NormalTok{, }\DataTypeTok{y =} \FloatTok{0.875}\NormalTok{,}
+      \DataTypeTok{label =} \KeywordTok{paste}\NormalTok{(}\StringTok{"italic(y) == frac(1,"}\NormalTok{, }
+                    \StringTok{"1 + exp(-(beta[0] + beta[1]*italic(x))))"}\NormalTok{),}
+      \DataTypeTok{parse =} \OtherTok{TRUE}\NormalTok{, }\DataTypeTok{size =} \DecValTok{4}\NormalTok{, }\DataTypeTok{hjust =} \DecValTok{0}\NormalTok{)}
 \end{Highlighting}
 \end{Shaded}
 
-\begin{verbatim}
-##       x  y         z
-## 5000 50 49 0.0940800
-## 5001 51 49 0.0932568
-## 5002 52 49 0.0923552
-## 5003 53 49 0.0913752
-## 5004 54 49 0.0903168
-## 5005 55 49 0.0891800
-\end{verbatim}
-
-\footnotesize データを生成する関数は，島谷(2017) 5.3節より。
-
-\end{frame}
-
-\begin{frame}[fragile]{ラスターで表示}
-
-\textbf{\texttt{geom\_raster}}関数
-
-\begin{Shaded}
-\begin{Highlighting}[]
-\NormalTok{p <-}\StringTok{ }\KeywordTok{ggplot}\NormalTok{(raster_data, }\KeywordTok{aes}\NormalTok{(x, y))}
-\NormalTok{p }\OperatorTok{+}\StringTok{ }\KeywordTok{geom_raster}\NormalTok{(}\KeywordTok{aes}\NormalTok{(}\DataTypeTok{fill =}\NormalTok{ z)) }\OperatorTok{+}\StringTok{ }\KeywordTok{coord_fixed}\NormalTok{()}
-\end{Highlighting}
-\end{Shaded}
-
-\includegraphics[height=5.5cm]{SappoRoR9_files/figure-beamer/geom_raster-1}
-
-\end{frame}
-
-\begin{frame}[fragile]{等高線で表示}
-
-\textbf{\texttt{geom\_contour}}関数
-
-\begin{Shaded}
-\begin{Highlighting}[]
-\NormalTok{p }\OperatorTok{+}\StringTok{ }\KeywordTok{geom_contour}\NormalTok{(}\KeywordTok{aes}\NormalTok{(}\DataTypeTok{z =}\NormalTok{ z), }\DataTypeTok{binwidth =} \FloatTok{0.01}\NormalTok{) }\OperatorTok{+}\StringTok{ }\KeywordTok{coord_fixed}\NormalTok{()}
-\end{Highlighting}
-\end{Shaded}
-
-\includegraphics[height=5.5cm]{SappoRoR9_files/figure-beamer/geom_contour-1}
+\includegraphics[height=4.5cm]{SappoRoR9_files/figure-beamer/expression-1}
 
 \end{frame}
 
 \begin{frame}[fragile]{地図データ}
 
-国土交通省国土数値情報行政区域データ(N03-170101\_01)を，\textbf{\texttt{kokudosuuchi}}パッケージを利用して
-よみこむ。
+@u\_riboさん作のjpndisrictパッケージを利用する。
 
 \begin{Shaded}
 \begin{Highlighting}[]
-\KeywordTok{library}\NormalTok{(kokudosuuchi)}
+\KeywordTok{library}\NormalTok{(jpndistrict)}
 
-\NormalTok{hokkaido_url <-}\StringTok{ }\KeywordTok{getKSJURL}\NormalTok{(}\StringTok{"N03"}\NormalTok{, }\DataTypeTok{prefCode =} \DecValTok{1}\NormalTok{) }\OperatorTok{%>%}
-\StringTok{  }\KeywordTok{filter}\NormalTok{(year }\OperatorTok{==}\StringTok{ }\DecValTok{2017}\NormalTok{)}
-\NormalTok{hokkaido_}\DecValTok{2017}\NormalTok{ <-}\StringTok{ }\KeywordTok{getKSJData}\NormalTok{(hokkaido_url}\OperatorTok{$}\NormalTok{zipFileUrl)}
-\end{Highlighting}
-\end{Shaded}
-
-\end{frame}
-
-\begin{frame}[fragile]{地図データの整形}
-
-\begin{Shaded}
-\begin{Highlighting}[]
-\KeywordTok{library}\NormalTok{(sf)}
-
-\NormalTok{sapporo <-}\StringTok{ }\NormalTok{hokkaido_}\DecValTok{2017}\NormalTok{[[}\DecValTok{1}\NormalTok{]] }\OperatorTok{%>%}
-\StringTok{  }\KeywordTok{filter}\NormalTok{(N03_}\DecValTok{003} \OperatorTok{==}\StringTok{ "札幌市"}\NormalTok{)}
-\NormalTok{sapporo_df <-}\StringTok{ }\KeywordTok{as_Spatial}\NormalTok{(sapporo}\OperatorTok{$}\NormalTok{geometry) }\OperatorTok{%>%}
-\StringTok{  }\KeywordTok{fortify}\NormalTok{() }\OperatorTok{%>%}
-\StringTok{  }\KeywordTok{mutate}\NormalTok{(}\DataTypeTok{id =} \KeywordTok{recode_factor}\NormalTok{(id,}
-                            \DataTypeTok{ID1 =} \StringTok{"中央区"}\NormalTok{,}
-                            \DataTypeTok{ID2 =} \StringTok{"北区"}\NormalTok{,}
-                            \DataTypeTok{ID3 =} \StringTok{"東区"}\NormalTok{,}
-                            \DataTypeTok{ID4 =} \StringTok{"白石区"}\NormalTok{,}
-                            \DataTypeTok{ID5 =} \StringTok{"豊平区"}\NormalTok{,}
-                            \DataTypeTok{ID6 =} \StringTok{"南区"}\NormalTok{,}
-                            \DataTypeTok{ID7 =} \StringTok{"西区"}\NormalTok{,}
-                            \DataTypeTok{ID8 =} \StringTok{"厚別区"}\NormalTok{,}
-                            \DataTypeTok{ID9 =} \StringTok{"手稲区"}\NormalTok{,}
-                            \DataTypeTok{ID10 =} \StringTok{"清田区"}\NormalTok{,}
-                            \DataTypeTok{.default =} \StringTok{""}\NormalTok{))}
+\NormalTok{hokkaido <-}\StringTok{ }\KeywordTok{jpn_pref}\NormalTok{(}\DataTypeTok{pref_code =} \DecValTok{1}\NormalTok{)}
+\NormalTok{sapporo <-}\StringTok{ }\KeywordTok{jpn_cities}\NormalTok{(}\DataTypeTok{jis_code =} \KeywordTok{paste0}\NormalTok{(}\StringTok{"0"}\NormalTok{, }\DecValTok{1101}\OperatorTok{:}\DecValTok{1110}\NormalTok{))}
 \end{Highlighting}
 \end{Shaded}
 
@@ -1157,20 +616,30 @@ dlmパッケージを使用して，カルマンフィルタでフィルタリ�
 
 \begin{frame}[fragile]{地図データの描画}
 
-地図のオブジェクトを用意して\textbf{\texttt{geom\_polygon}}関数で描画。
+ver. 3で追加になった\textbf{geom\_sf}を使う。
 
 \begin{Shaded}
 \begin{Highlighting}[]
-\KeywordTok{ggplot}\NormalTok{(sapporo_df) }\OperatorTok{+}\StringTok{ }\KeywordTok{coord_fixed}\NormalTok{() }\OperatorTok{+}
-\StringTok{  }\KeywordTok{geom_polygon}\NormalTok{(}\KeywordTok{aes}\NormalTok{(long, lat, }\DataTypeTok{fill =}\NormalTok{ id), }\DataTypeTok{colour =} \StringTok{"grey"}\NormalTok{) }\OperatorTok{+}
+\KeywordTok{ggplot}\NormalTok{(hokkaido) }\OperatorTok{+}\StringTok{ }\KeywordTok{geom_sf}\NormalTok{(}\KeywordTok{aes}\NormalTok{(}\DataTypeTok{fill =}\NormalTok{ city)) }\OperatorTok{+}
+\StringTok{  }\KeywordTok{theme}\NormalTok{(}\DataTypeTok{legend.position =} \StringTok{"none"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics[height=3.6cm]{SappoRoR9_files/figure-beamer/geom_sf-1}
+
+\end{frame}
+
+\begin{frame}[fragile]
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{ggplot}\NormalTok{(sapporo) }\OperatorTok{+}\StringTok{ }\KeywordTok{geom_sf}\NormalTok{(}\KeywordTok{aes}\NormalTok{(}\DataTypeTok{fill =}\NormalTok{ city)) }\OperatorTok{+}
+\StringTok{  }\KeywordTok{scale_fill_discrete}\NormalTok{(}\DataTypeTok{name =} \StringTok{"市区"}\NormalTok{, }\DataTypeTok{breaks =}\NormalTok{ sapporo}\OperatorTok{$}\NormalTok{city) }\OperatorTok{+}
 \StringTok{  }\KeywordTok{theme_bw}\NormalTok{(}\DataTypeTok{base_family =} \StringTok{"IPAexGothic"}\NormalTok{)}
 \end{Highlighting}
 \end{Shaded}
 
-\includegraphics[height=3.6cm]{SappoRoR9_files/figure-beamer/polygon-1}
-
-\small ggplot2開発版には\textbf{\texttt{geom\_sf}}関数がある。
-いずれは，地図描画にはそちらがつかわれるようになるはず。
+\includegraphics[height=3.6cm]{SappoRoR9_files/figure-beamer/geom_sf2-1}
 
 \end{frame}
 
@@ -1213,6 +682,38 @@ dlmパッケージを使用して，カルマンフィルタでフィルタリ�
   \tightlist
   \item
     \url{https://mrunadon.github.io/ggplot2/}
+  \end{itemize}
+\end{itemize}
+
+\end{frame}
+
+\begin{frame}
+
+\begin{itemize}
+\tightlist
+\item
+  ggplot2逆引（Hiroaki Yutaniさん）
+
+  \begin{itemize}
+  \tightlist
+  \item
+    \url{https://yutannihilation.github.io/ggplot2-gyakubiki/}
+  \end{itemize}
+\item
+  Cookbook for R » Graphs（Winston Changさん）
+
+  \begin{itemize}
+  \tightlist
+  \item
+    \url{http://www.cookbook-r.com/Graphs/}
+  \end{itemize}
+\item
+  Stack Overflowでのggplot2関連の質問
+
+  \begin{itemize}
+  \tightlist
+  \item
+    \url{https://stackoverflow.com/search?q=ggplot2}
   \end{itemize}
 \end{itemize}
 

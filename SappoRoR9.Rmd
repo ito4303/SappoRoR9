@@ -17,19 +17,13 @@ knitr::opts_chunk$set(echo = TRUE)
 library(ggplot2)
 library(dplyr)
 library(readr)
-
-github_dir <- "https://raw.githubusercontent.com/ito4303/esj65/master/"
 ```
 
 # はじめに
 
 ## 今回の発表に使用したコード・データ
 
-https://github.com/ito4303/esj65 で公開
-
-<!-- \begin{center} -->
-<!-- \includegraphics[width=7cm]{github.png} -->
-<!-- \end{center} -->
+https://github.com/ito4303/SappoRoR9 で公開
 
 ## このごろよくみるこのようなグラフ
 
@@ -61,7 +55,7 @@ ggplot(data = iris,
 
 >- 統一された文法でさまざまな種類のグラフをえがける。
 >- 関連パッケージもどんどんできている。
->- GGally, ggmcmc, ggmap, ggthemes, egg\dots
+>- GGally, ggmcmc, ggmap, ggthemes, gghighlight, egg\dots
 
 <!--
 GGally: 散布図行列, モデルの係数のプロット, Kaplan-Meierプロットなどさまざまなグラフ
@@ -82,123 +76,8 @@ egg: 複数のグラフを並べるなど
     - 2016-03-02 ver. 2.1.0
     - 2016-11-15 ver. 2.2.0
     - 2016-12-31 ver. 2.2.1
-
-## ここでの目的
-
-\Large
-
-- 得られたデータを可視化する。
-
-- データにあった解析
-
-## たとえば
-
-```{r r_eq_0, fig.width=6, fig.height=3, out.width="10.5cm", echo=FALSE, cache=TRUE}
-x1 <- seq(-1, 1, 0.05)
-y1 <- sqrt(1 - x1^2)
-set.seed(5587)
-x2 <- rnorm(length(x1), mean(x1), sd(x1))
-y2 <- rnorm(length(x1), mean(y1), sd(y1))
-df <- data.frame(X = c(x1, x2), Y = c(y1, y2),
-                 Type = rep(c("1", "2"), each = length(x1)))
-corr_coef <- c(sprintf("%4.3f", cor(x1, y1)),
-               sprintf("%4.3f", cor(x2, y2)))
-text <- data.frame(X = c(0.5, 0.7), Y = c(0.1, 0.1),
-                   Type = c("1", "2"),
-                   labels = c(paste("italic(r) == \"", corr_coef[1], "\""),
-                              paste("italic(r) == \"", corr_coef[2], "\"")))
-ggplot(df) +
-  geom_point(aes(X, Y), size = 1, alpha = 0.8) +
-  geom_text(data = text, mapping = aes(X, Y, label = labels), parse = TRUE) +
-  ylim(0, 1.5) +
-  coord_fixed() +
-  facet_wrap(~ Type)
-```
-
-どちらも$r$は0だが
-
-
-## もうひとつの目的
-
-- グラフ作成に，手作業（コピー&ペースト）をへらす。できれば なくす。\footnote{baseグラフィックでも可能ですが。}
-- R（と，RStudioなど）で自動化する。
-
-\Large\bfseries
-
-- 手作業に由来するまちがいをなくす。
-- どういう処理をしたか，コードに保存する。
-- Reproducible Research（の一部）
-
-\normalsize\mdseries
-
-- この発表資料も，R Markdownで作成して，RStudio（とLaTeX）で一括処理。
-
-# ggplot2をつかってみる
-
-## インストールとパッケージのロード
-
-**`ggplot2`**パッケージをインストールしておく。
-
-```{r install_package, eval=FALSE}
-install.packages("ggplot2")
-```
-
-パッケージをロードする。
-
-```{r load_ggplot2}
-library(ggplot2)
-```
-
-あるいは，**`tidyverse`**パッケージをインストール，ロードしてもよい。
-
-\vspace{12pt}
-
-<!-- http://notchained.hatenablog.com/entry/tidyverse -->
-
-\textcolor{red}{\large\bfseries ggplot2はtidyデータと相性がいい。}
-
-## 使用するデータ
-
-京都市内の広葉樹二次林の毎木調査データ。\footnote{Itô (2017) Biodiversity Data Journal 5: e11732. \\
-\hspace{14pt} https://doi.org/10.3897/BDJ.5.e11732 \\
-\hspace{14pt} https://doi.org/10.5061/dryad.7f399 \\
-\hspace{14pt} (CC0 https://creativecommons.org/publicdomain/zero/1.0/)}
-
-50m $\times$ 50mの範囲で，アラカシとクロバイの幹の座標(X, Y)と胸高直径(DBH)を抽出する。
-
-
-## データの読み込みと整形
-
-1993年と2014年のデータと，2014年だけのデータを用意する。
-
-```{r read_data, cache=TRUE, message=FALSE}
-library(readr)
-library(dplyr)
-
-github_dir <- paste0("https://raw.githubusercontent.com/",
-                     "ito4303/esj65/master/")
-s_data_file <- "Stem_data.csv"
-m_data_file <- "Measurement_data.csv"
-s_data <- read_csv(paste0(github_dir, s_data_file))
-m_data <- read_csv(paste0(github_dir, m_data_file))
-g_data <- inner_join(m_data, s_data, by = "Stem") %>%
-  filter(Year %in% c(1993, 2014) & X1 < 50 &
-           Species %in% c("Quercus glauca",
-                          "Symplocos prunifolia") &
-           !is.na(DBH)) %>%
-  transmute(X = X1, Y = Y1, Year, Species, DBH)
-g_2014 <- filter(g_data, Year == 2014)
-```
-
-## データの確認
-
-
-```{r show_data}
-head(g_2014)
-```
-
-このデータから，樹幹位置図を作成する。
-
+    - 2018-07-04 ver. 3.0.0
+    - 2018-10-25 ver. 3.1.0
 
 ## ggplot関数
 
@@ -207,7 +86,7 @@ head(g_2014)
 <!-- 形式的はgeom_blankが使われている。 -->
 
 ```{r ggplot_func, fig.width=5.5, fig.height=3, out.height="6cm", cache=TRUE}
-p <- ggplot(data = g_2014)
+p <- ggplot(data = iris)
 print(p)
 ```
 
@@ -220,22 +99,24 @@ print(p)
 \textcolor{red}{\bfseries \texttt{ggplot}オブジェクトに`+'演算子で，レイヤーを追加する。}
 
 ```{r geom_func, fig.width=5.5, fig.height=3, out.height="5cm", cache=TRUE}
-p + geom_point(mapping = aes(x = X, y = Y))
+p + geom_point(mapping = aes(x = Sepal.Length, y = Sepal.Width))
 ```
 
-## 樹種ごとに色をかえる
+## 種類ごとに色をかえる
 
 **`aes`**関数の`colour`（`color`でもよい）引数を指定する。
 
 ```{r colour, fig.width=5.5, fig.height=3, out.height="5.5cm", cache=TRUE}
-p + geom_point(mapping = aes(x = X, y = Y, colour = Species))
+p + geom_point(mapping = aes(x = Sepal.Length, y = Sepal.Width,
+                             colour = Species))
 ```
 
 ## こうしてもおなじ
 
 ```{r colour2, fig.width=5.5, fig.height=3, out.height="5.5cm", cache=TRUE}
-ggplot(data = g_2014,
-       mapping = aes(x = X, y = Y, colour = Species)) +
+ggplot(data = iris,
+       mapping = aes(x = Sepal.Length, y = Sepal.Width,
+                     colour = Species)) +
   geom_point()
 ```
 
@@ -244,29 +125,18 @@ ggplot(data = g_2014,
 **`aes`**関数の外で`colour`を指定する（**`geom_point`**関数の`colour`引数に指定する）と，すべての点の色が指定した色になる。
 
 ```{r colour3, fig.width=5.5, fig.height=3, out.height="5.5cm", cache=TRUE}
-p + geom_point(mapping = aes(x = X, y = Y), colour = "red")
+p + geom_point(mapping = aes(x = Sepal.Length, y = Sepal.Width),
+               colour = "red")
 ```
 
-## 座標系
 
-Y軸は実は下むきなので，軸を反転させる（**`scale_y_reverse`**関数）。
-また，X軸とY軸の長さをそろえる（**`coord_fixed`**関数）。
-
-\textcolor{red}{\bfseries 軸の指定なども`+'演算子で追加する。}
-
-```{r coord, fig.width=4.5, fig.height=3, out.height="5cm", cache=TRUE}
-p2 <- ggplot(g_2014) + xlim(0, 50) +
-  scale_y_reverse(limits = c(50, 0)) + coord_fixed(ratio = 1)
-p2 + geom_point(mapping = aes(x = X, y = Y, colour = Species))
-```
-
-## 樹種ごとに点の形をかえる
+## 種類ごとに点の形をかえる
 
 **`aes`**関数の`shape`引数を指定する。
 
 ```{r point_shape, fig.width=4.5, fig.height=3, out.height="5cm", cache=TRUE}
-p2 + geom_point(aes(x = X, y = Y,
-                    colour = Species, shape = Species))
+p + geom_point(aes(x = Sepal.Length, y = Sepal.Width,
+                   colour = Species, shape = Species))
 ```
 
 ## 点を大きくする
@@ -274,21 +144,10 @@ p2 + geom_point(aes(x = X, y = Y,
 **`geom_point`**関数の`size`引数を指定する。
 
 ```{r point_size, fig.width=4.5, fig.height=3, out.height="5cm", cache=TRUE}
-p2 + geom_point(aes(x = X, y = Y,
-                    colour = Species, shape = Species),
-                size = 4, alpha = 0.7)
-```
-
-## DBHに応じて点の大きさを変える
-
-**`aes`**関数の`size`引数を指定する。
-
-```{r point_size2, fig.width=4.5, fig.height=3, out.height="5cm", cache=TRUE}
-p3 <- p2 +
-  geom_point(aes(x = X, y = Y, 
-                 colour = Species, shape = Species, size = DBH),
-             alpha = 0.7)
-print(p3)
+p2 <- p + geom_point(aes(x = Sepal.Length, y = Sepal.Width,
+                         colour = Species, shape = Species),
+                     size = 4, alpha = 0.7)
+print(p2)
 ```
 
 ## 色を指定する
@@ -296,7 +155,7 @@ print(p3)
 **`scale_colour_manual`**関数で，任意の色を指定できる。
 
 ```{r spec_colour, fig.width=4.5, fig.height=3, out.height="5cm", cache=TRUE}
-p3 + scale_colour_manual(values = c("red", "#3355FF"))
+p2 + scale_colour_manual(values = c("black", "red", "#3355FF"))
 ```
 
 ## 漢字をつかう
@@ -309,12 +168,12 @@ theme(text = element_text(family = "NotoSansCJKjp-Regular", size = 10))
 -->
 
 ```{r Japanese_font, cache=TRUE}
-species <- c("Quercus glauca" = "アラカシ",
-             "Symplocos prunifolia" = "クロバイ")
-p4 <- p3 + labs(x = "X軸 (m)", y = "Y軸 (m)") +
-  scale_colour_discrete(name = "種", labels = species) +
-  scale_shape_discrete(name = "種", labels = species) +
-  scale_size_continuous(name = "胸高直径 (cm)") +
+spp <- c("ヒオウギアヤメ", "イリス・ヴェルシカラー",
+         "イリス・ヴァージニカ")
+p3 <- p2 + labs(x = "萼長 (cm)", y = "萼幅(cm)") +
+  scale_colour_discrete(name = "種", labels = spp) +
+  scale_shape_discrete(name = "種", labels = spp) +
+  scale_size_continuous(name = "萼長 (cm)") +
   theme(text = element_text(family = "IPAexGothic", size = 10))
 ```
 
@@ -326,7 +185,7 @@ Windowsでは**`windowsFonts`**関数でフォントの設定をしておくか�
 ## 漢字をつかった表示
 
 ```{r Japanese_font2, dev="cairo_pdf", fig.width=4.5, fig.height=3, out.height="7cm", echo=FALSE, cache=TRUE}
-print(p4)
+print(p3)
 ```
 
 ## 図をファイルに保存する
@@ -335,7 +194,7 @@ print(p4)
 \footnote{R標準のグラフィックデバイス関数による出力もふつうにできる。}
 
 ```{r cairo_pdf, eval=FALSE}
-ggsave("p4.pdf", device = cairo_pdf,
+ggsave("iris.pdf", device = cairo_pdf,
        width = 12, height = 8, units = "cm")
 ```
 
@@ -360,46 +219,29 @@ macOSでは，**`ggsave`**関数のほか，**`quartz.save`**関数も利用可�
 ## themeをかえる(1)
 
 ```{r theme_bw,dev="cairo_pdf", fig.width=4.5, fig.height=3, out.height="6cm", cache=TRUE}
-p4 + theme_bw(base_family = "IPAexGothic",
-              base_size = 12)
+p3 + theme_bw(base_family = "IPAexGothic")
 ```
 
 ## themeをかえる(2)
 
 ```{r theme_classic, dev="cairo_pdf", fig.width=4.5, fig.height=3, out.height="6cm", cache=TRUE}
-p4 + theme_classic(base_family = "NotoSansCJKjp-Regular",
-                   base_size = 12)
+p3 + theme_classic(base_family = "IPAexGothic")
 ```
 
-<!-- ggthemeパッケージに各種テーマあり -->
+## themeをかえる(3)
+
+```{r theme_excel, dev="cairo_pdf", fig.width=4.5, fig.height=3, out.height="6cm", cache=TRUE}
+library(ggthemes)
+p2 + theme_excel()
+```
 
 ## facet: 分割して表示
 
 **`facet_wrap`**関数を使用して，種ごとに分割して表示。
 
 ```{r facet, dev="cairo_pdf", fig.width=4.5, fig.height=3, out.height="5.5cm", cache=TRUE}
-p4 + facet_wrap(~ Species) + theme(legend.position = "none")
+p3 + facet_wrap(~ Species) + theme(legend.position = "none")
 ```
-
-## facet_grid: 縦横に分割
-
-```{r facet_grid, dev="cairo_pdf", fig.width=6, fig.height=4, out.height="5.5cm", cache=TRUE}
-ggplot(g_data, aes(X, Y, colour = Species, size = DBH)) +
-  geom_point(alpha = 0.7) + coord_fixed() + scale_y_reverse() +
-  scale_colour_discrete(guide = "none") +
-  facet_grid(Year ~ Species)
-```
-
-
-## ここまでのまとめ
-
-\Large
-
-- `ggplot`関数でオブジェクト生成。
-- mapping引数に指定する`aes`関数で，データフレームのどのフィールドをどのグラフ要素に割り当てるかを指定する。
-- `geom_*`関数で描画（レイヤー追加）。
-- テーマ，軸，Facetなどをそれぞれの関数で設定する。
-- パーツや設定を`+'演算子で追加していって，グラフを完成させる。
 
 
 # ほかの種類のグラフは
@@ -414,45 +256,27 @@ ggplot(g_data, aes(X, Y, colour = Species, size = DBH)) +
 - **`geom_histogram`**
 - **`geom_line`**
 - **`geom_polygon`**
-- **`geom_smooth`**
 - **`geom_ribbon`**
+- **`geom_smooth`**
 - **`geom_tile`**
 
 などなど
 
-## 次のデータ
-
-京都市内の広葉樹二次林で採取したアラカシの年輪データ。
-\footnote{Itô and Sumida (2017) Ecol. Res. 32:105-105. \\
-\hspace{14pt} https:doi.org/10.1007/s11284-016-1424-1 \\
-\hspace{14pt} (CC-BY 4.0 https://creativecommons.org/licenses/by/4.0/)}
-
-地際の各年の直径(mm)を使用。
-
-```{r read_tree_ring_data, cache=TRUE, message=FALSE}
-q_data_file <- "Tree_ring_data.csv"
-q_data <- read_csv(paste0(github_dir, q_data_file)) %>%
-  filter(Height == 0) %>%
-  mutate(No = factor(No),
-         Year = as.integer(1994 - Year + 1)) %>%
-  select(No, Year, Diameter)
-```
-
-## データの確認
-
-```{r tree_ring_data}
-head(q_data)
-```
 
 ## 折れ線グラフ
 
 **`geom_line`**関数
 
-No.3の幹のみを抽出して表示。
+ナイル川のデータ
+
+```{r Nile, include=FALSE}
+data(Nile)
+df_Nile <- data.frame(Year = c(time(Nile)), Level = as.numeric(Nile))
+```
+
 
 ```{r geom_line1, fig.width=4.5, fig.height=3, out.height="5.5cm", cache=TRUE}
-p <- filter(q_data, No == 3) %>% ggplot(aes(Year, Diameter))
-p + geom_line()
+(p <- ggplot(df_Nile, aes(x = Year, y = Level)) + geom_line())
 ```
 
 ## 折れ線グラフ+点
@@ -463,166 +287,15 @@ p + geom_line()
 p + geom_line(linetype = 2) + geom_point(size = 2)
 ```
 
-## データ全体をgeom_lineで表示
+## 平滑化曲線
 
-```{r geom_line3, fig.width=4.5, fig.height=3, out.height="5.5cm", cache=TRUE}
-ggplot(q_data) + geom_line(aes(Year, Diameter))
+**`geom_smooth`**を使用。
+
+```{r geom_line3, fig.width=4.5, fig.height=3, out.height="5.5cm", echo = TRUE, cache=TRUE}
+p + geom_line(linetype = 2) + geom_smooth(method = "loess")
 ```
 
-うまくいかない。
 
-## groupを指定
-
-```{r geom_line5, fig.width=4.5, fig.height=3, out.height="5.5cm", cache=TRUE}
-ggplot(q_data) + geom_line(aes(Year, Diameter, group = No))
-```
-
-## colourを指定
-
-```{r geom_line4, fig.width=4.5, fig.height=3, out.height="5.5cm", cache=TRUE}
-ggplot(q_data) + geom_line(aes(Year, Diameter, colour = No)) +
-   guides(colour = guide_legend(ncol = 2))
-```
-
-## 加工したプロットを重ねる
-
-アラカシNo.21の各年の肥大成長量を用意する。
-
-```{r q_data3, fig.width=4.5, fig.height=3, out.height="4.5cm", cache=TRUE}
-q21 <- filter(q_data, No == 21) %>%
-  mutate(Growth = Diameter - lead(Diameter)) %>%
-  filter(!is.na(Growth)) %>% arrange(Year)
-p1 <- ggplot(q21) + geom_line(aes(Year, Growth))
-print(p1)
-```
-
-## 平滑化した曲線を重ねる
-
-**`geom_smooth`**関数で平滑化できる。  
-**`geom_smooth`**`(method = "lm")`とすると直線回帰。
-
-```{r geom_smooth, fig.width=4.5, fig.height=3, out.height="5.5cm", echo = TRUE, cache=TRUE}
-p1 + geom_smooth(aes(Year, Growth), method = "loess")
-```
-
-## 別のデータフレームから(1)
-
-dlmパッケージを使用して，カルマンフィルタでフィルタリングした値と95%信頼区間をデータフレーム`kf`に格納する。
-
-```{r dlm, message=FALSE, cache=TRUE}
-library(dlm)
-build <- function(theta) {
-  dlmModPoly(order = 1, dV = theta[1], dW = theta[2])
-}
-fit <- dlmMLE(q21$Growth, parm = c(1, 1), 
-              build = build, lower = c(0, 0))
-model <- dlmModPoly(order = 1,
-                    dV = fit$par[1], dW = fit$par[2])
-filter <- dlmFilter(q21$Growth, model)
-kf <- data.frame(Year = q21$Year,
-                 Filter = dropFirst(filter$m)) %>%
-  mutate(sd = dlmSvd2var(filter$U.C, filter$D.C) %>%
-           unlist() %>%
-           dropFirst()) %>%
-  mutate(Lower = qnorm(0.025, Filter, sd),
-         Upper = qnorm(0.975, Filter, sd))
-```
-
-## 別のデータフレームから(2)
-
-カルマンフィルタでフィルタリングした値（赤線）と95%信頼区間（うすい赤色の領域）を重ねて
-表示する。
-
-```{r geom_ribbon, fig.width=4.5, fig.height=3, out.height="4.5cm", cache=TRUE}
-p1 + geom_line(data = kf, aes(Year, Filter), colour = "red") +
-  geom_ribbon(data = kf, aes(Year, ymin = Lower, ymax = Upper),
-              fill = "red", alpha = 0.3)
-```
-
-## 箱ひげ図
-
-アヤメのデータ `data(iris)` を使用。
-
-**`geom_boxplot`**関数
-
-```{r boxplot, fig.width=4.5, fig.height=3, out.height="5.5cm", cache=TRUE}
-ggplot(iris) + geom_boxplot(aes(Species, Sepal.Width))
-```
-
-## X軸とY軸をいれかえる
-
-**`coor_flip`**関数
-
-```{r boxplot2, fig.width=4.5, fig.height=3, out.height="5.5cm", cache=TRUE}
-ggplot(iris) + geom_boxplot(aes(Species, Sepal.Width)) +
-  coord_flip()
-```
-
-## ヒストグラム(1)
-
-**`geom_histogram`**関数
-
-`fill`引数で塗りつぶしの指定。
-
-```{r histogram, fig.width=4.5, fig.height=3, out.height="5cm", cache=TRUE}
-ggplot(iris) +
-  geom_histogram(aes(Sepal.Length, fill = Species),
-                 binwidth = 0.5)
-```
-
-## ヒストグラム(2)
-
-`colour`と`fill`を別に指定。
-
-```{r histogram2, fig.width=4.5, fig.height=3, out.height="5cm", cache=TRUE}
-ggplot(iris) +
-  geom_histogram(aes(Sepal.Length, fill = Species),
-                 colour = "grey10", binwidth = 0.5)
-```
-
-## ヒストグラム(3)
-
-`position = "dodge"`: 積み重ねずに ずらす。
-
-```{r histogram3, fig.width=4.5, fig.height=3, out.height="5.5cm", cache=TRUE}
-ggplot(iris) +
-  geom_histogram(aes(Sepal.Length, fill = Species),
-                 binwidth = 0.5, position = "dodge")
-```
-
-## 密度
-
-**`geom_density`**関数
-
-```{r geom_density, fig.width=4.5, fig.height=3, out.height="5.5cm", cache=TRUE}
-p <- ggplot(iris, aes(Sepal.Length, fill = Species))
-p + geom_density(alpha = 0.5)
-```
-
-## 注釈をつける
-
-**`annotate`**関数
-
-```{r annotate, fig.width=4.5, fig.height=3, out.height="5cm", cache=TRUE}
-x_pos <- c(5.0, 5.7, 6.5); y_pos <- c(0.6, 0.8, 0.8)
-labels <- c("setosa", "versicolor", "virginica")
-p + geom_density(alpha = 0.5, show.legend = FALSE) +
-  annotate("text", x = x_pos, y = y_pos, label = labels,
-           family = "Helvetica")
-```
-
-## 数式
-
-`parse = TRUE`で数式を解釈して表示
-
-```{r expression, fig.width=4.5, fig.height=2.5, out.height="4.5cm", cache=TRUE}
-ggplot(data.frame(x = seq(-5, 5, 0.01)), aes(x)) +
-  stat_function(fun = function(x) {1 / (1 + exp(-x))}) +
-  annotate("text", x = -5, y = 0.875,
-      label = paste("italic(y) == frac(1,", 
-                    "1 + exp(-(beta[0] + beta[1]*italic(x))))"),
-      parse = TRUE, size = 4, hjust = 0)
-```
 
 ## 棒グラフ
 
@@ -645,82 +318,50 @@ p + stat_count(geom = "bar", fill = "grey50")
 - たいていの`geom`には対応する`stat`関数がある。
 - `geom`ではなくて`stat`で描画レイヤーを追加することも可能。
 
+## 関数のグラフと数式
 
-## 3次元のデータ
+**stat_function**で関数を指定。
+**`annotate`**で注釈。
+`parse = TRUE`で数式を解釈して表示。
 
-```{r raster_data}
-r <- function(x, y) (-0.00002 * (x - 40)^2 + 0.05) * 0.04 * y
-raster_data <- expand.grid(x = 0:100, y = 0:100) %>%
-  mutate(z = r(x, y))
-print(raster_data[5000:5005, ])
+```{r expression, fig.width=4.5, fig.height=2.5, out.height="4.5cm", cache=TRUE}
+ggplot(data.frame(x = seq(-5, 5, 0.01)), aes(x)) +
+  stat_function(fun = function(x) {1 / (1 + exp(-x))}) +
+  annotate("text", x = -5, y = 0.875,
+      label = paste("italic(y) == frac(1,", 
+                    "1 + exp(-(beta[0] + beta[1]*italic(x))))"),
+      parse = TRUE, size = 4, hjust = 0)
 ```
 
-\footnotesize データを生成する関数は，島谷(2017) 5.3節より。
-
-## ラスターで表示
-
-**`geom_raster`**関数
-
-```{r geom_raster, fig.width=4.5, fig.height=3, out.height="5.5cm", cache=TRUE}
-p <- ggplot(raster_data, aes(x, y))
-p + geom_raster(aes(fill = z)) + coord_fixed()
-```
-
-## 等高線で表示
-
-**`geom_contour`**関数
-
-```{r geom_contour, fig.width=4.5, fig.height=3, out.height="5.5cm", cache=TRUE}
-p + geom_contour(aes(z = z), binwidth = 0.01) + coord_fixed()
-```
 
 ## 地図データ
 
-国土交通省国土数値情報行政区域データ(N03-170101_01)を，**`kokudosuuchi`**パッケージを利用して よみこむ。
+@u_riboさん作のjpndisrictパッケージを利用する。
 
-```{r kokudosuuchi, message=FALSE, warning=FALSE, cache=TRUE}
-library(kokudosuuchi)
+```{r map, message=FALSE}
+library(jpndistrict)
 
-hokkaido_url <- getKSJURL("N03", prefCode = 1) %>%
-  filter(year == 2017)
-hokkaido_2017 <- getKSJData(hokkaido_url$zipFileUrl)
-```
-
-## 地図データの整形
-
-```{r filter_sapporo, message=FALSE, warning=FALSE, cache=TRUE}
-library(sf)
-
-sapporo <- hokkaido_2017[[1]] %>%
-  filter(N03_003 == "札幌市")
-sapporo_df <- as_Spatial(sapporo$geometry) %>%
-  fortify() %>%
-  mutate(id = recode_factor(id,
-                            ID1 = "中央区",
-                            ID2 = "北区",
-                            ID3 = "東区",
-                            ID4 = "白石区",
-                            ID5 = "豊平区",
-                            ID6 = "南区",
-                            ID7 = "西区",
-                            ID8 = "厚別区",
-                            ID9 = "手稲区",
-                            ID10 = "清田区",
-                            .default = ""))
+hokkaido <- jpn_pref(pref_code = 1)
+sapporo <- jpn_cities(jis_code = paste0("0", 1101:1110))
 ```
 
 ## 地図データの描画
 
-地図のオブジェクトを用意して**`geom_polygon`**関数で描画。
+ver. 3で追加になった**geom_sf**を使う。
 
-```{r polygon, dev="cairo_pdf", fig.width=4.5, fig.height=3, out.height="3.6cm", cache=TRUE}
-ggplot(sapporo_df) + coord_fixed() +
-  geom_polygon(aes(long, lat, fill = id), colour = "grey") +
-  theme_bw(base_family = "IPAexGothic")
+```{r geom_sf, dev="cairo_pdf", fig.width=4.5, fig.height=3, out.height="3.6cm", message=FALSE}
+ggplot(hokkaido) + geom_sf(aes(fill = city)) +
+  theme(legend.position = "none")
 ```
 
-\small ggplot2開発版には**`geom_sf`**関数がある。
-いずれは，地図描画にはそちらがつかわれるようになるはず。
+---
+
+
+```{r geom_sf2, dev="cairo_pdf", fig.width=4.5, fig.height=3, out.height="3.6cm", message=FALSE}
+ggplot(sapporo) + geom_sf(aes(fill = city)) +
+  scale_fill_discrete(name = "市区", breaks = sapporo$city) +
+  theme_bw(base_family = "IPAexGothic")
+```
 
 # おわりに
 
@@ -737,12 +378,12 @@ ggplot(sapporo_df) + coord_fixed() +
 - グラフ描画ggplot2の辞書的まとめ20のコード（MrUnadonさん）
     - https://mrunadon.github.io/ggplot2/
 
+---
 
-<!--
 - ggplot2逆引（Hiroaki Yutaniさん）
     - https://yutannihilation.github.io/ggplot2-gyakubiki/
 - Cookbook for R » Graphs（Winston Changさん）
     - http://www.cookbook-r.com/Graphs/
 - Stack Overflowでのggplot2関連の質問
     - https://stackoverflow.com/search?q=ggplot2
--->
+
