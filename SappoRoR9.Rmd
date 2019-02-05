@@ -342,7 +342,11 @@ library(jpndistrict)
 
 hokkaido <- jpn_pref(pref_code = 1)
 sapporo <- jpn_cities(jis_code = paste0("0", 1101:1110))
+```
 
+別に人口データを用意して、データを付け加える。
+
+```{r population, message=FALSE}
 library(dplyr)
 load("Hokkaido_population.RData")
 hokkaido <- dplyr::left_join(hokkaido, hokkaido_popl,
