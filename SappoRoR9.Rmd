@@ -13,10 +13,7 @@ output:
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 
-# キャッシュの有無に影響されないように設定しておく
 library(ggplot2)
-library(dplyr)
-library(readr)
 ```
 
 # はじめに
@@ -234,7 +231,7 @@ p3 + theme_classic(base_family = "IPAexGothic")
 
 ```{r theme_excel, dev="cairo_pdf", fig.width=4.5, fig.height=3, out.height="6cm", cache=TRUE}
 library(ggthemes)
-p2 + theme_excel()
+p2 + scale_colour_excel() + theme_excel()
 ```
 
 ## facet: 分割して表示
@@ -345,24 +342,31 @@ library(jpndistrict)
 
 hokkaido <- jpn_pref(pref_code = 1)
 sapporo <- jpn_cities(jis_code = paste0("0", 1101:1110))
+
+library(dplyr)
+load("Hokkaido_population.RData")
+hokkaido <- dplyr::left_join(hokkaido, hokkaido_popl,
+                             by = "city_code")
 ```
 
 ## 地図データの描画
 
 ver. 3で追加になった**geom_sf**を使う。
 
-```{r geom_sf, dev="cairo_pdf", fig.width=4.5, fig.height=3, out.height="3.6cm", message=FALSE}
-ggplot(hokkaido) + geom_sf(aes(fill = city)) +
-  theme(legend.position = "none")
+```{r geom_sf2, dev="cairo_pdf", fig.width=5, fig.height=4, out.height="5cm", message=FALSE}
+ggplot(sapporo) + geom_sf(aes(fill = city)) +
+  scale_fill_discrete(name = "市区", breaks = sapporo$city) +
+  theme_bw(base_family = "IPAexGothic")
 ```
 
 ---
 
-
-```{r geom_sf2, dev="cairo_pdf", fig.width=4.5, fig.height=3, out.height="3.6cm", message=FALSE}
-ggplot(sapporo) + geom_sf(aes(fill = city)) +
-  scale_fill_discrete(name = "市区", breaks = sapporo$city) +
-  theme_bw(base_family = "IPAexGothic")
+```{r geom_sf, dev="cairo_pdf", fig.width=5, fig.height=4, out.height="5cm", message=FALSE}
+ggplot(hokkaido) + geom_sf(aes(fill = population)) +
+  scale_fill_continuous(name = "人口", trans = "log10",
+                        breaks = c(10^3, 10^4, 10^5),
+                        labels = c("1000", "10000", "100000")) +
+  theme_grey(base_family = "IPAexGothic")
 ```
 
 # おわりに
