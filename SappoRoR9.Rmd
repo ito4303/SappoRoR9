@@ -5,6 +5,7 @@ date: "2019/3/2"
 output:
   beamer_presentation:
     latex_engine: lualatex
+    theme: metropolis
     keep_tex: false
     includes:
       in_header: header.tex
@@ -70,7 +71,7 @@ egg: 複数のグラフを並べるなど
 
 ## 開発者など
 
-- 開発者: Hadley Wickham & Winston Chang
+- 開発者: Hadley Wickhamほか
 - ウェブサイト: http://ggplot2.tidyverse.org/
 - 開発履歴 \footnote{https://github.com/tidyverse/ggplot2/releases}
     - 2015-01-10 ver. 1.0.0
@@ -99,8 +100,7 @@ print(p)
 - **`geom_point`** 関数: 散布図を描画（レイヤーに追加）する関数
     - `mapping` 引数: 変数のマッピングを渡す。
 - **`aes`** 関数: 変数とグラフ要素とのaesthetic mappingを生成
-
-\textcolor{red}{\bfseries \texttt{ggplot}オブジェクトに`+'演算子で，レイヤーを追加する。}
+- \textcolor{red}{\bfseries \texttt{ggplot}オブジェクトに`+'演算子で，レイヤーを追加する。}
 
 ```{r geom_func, fig.width=5.5, fig.height=3, out.height="5cm", cache=TRUE}
 p + geom_point(mapping = aes(x = Sepal.Length, y = Sepal.Width))
@@ -181,10 +181,11 @@ p3 <- p2 + labs(x = "萼長 (cm)", y = "萼幅(cm)") +
   theme(text = element_text(family = "IPAexGothic", size = 10))
 ```
 
-文字コードはUTF-8にしておくとよい。\footnote{日本語版WindowsのR.exeでは文字化けするかも。}
+文字コードはUTF-8にしておくとよい（日本語版WindowsのR.exeでは文字化けするかも）。
+
+\small
 
 Windowsでは**`windowsFonts`**関数でフォントの設定をしておくか，**extrafont**パッケージをインストールして，必要な設定をしておく。
-
 
 ## 漢字をつかった表示
 
@@ -194,27 +195,21 @@ print(p3)
 
 ## 図をファイルに保存する
 
-**`ggsave`**関数などをつかう。
-\footnote{R標準のグラフィックデバイス関数による出力もふつうにできる。}
+**`ggsave`**関数などをつかう（R標準のグラフィックデバイス関数による出力も可能）。
 
 ```{r cairo_pdf, eval=FALSE}
 ggsave("iris.pdf", device = cairo_pdf,
        width = 12, height = 8, units = "cm")
 ```
 
-日本語フォントを埋め込んだPDFを出力するには  
-`device = cairo_pdf`  
-とする。\footnote{macOSではXQuartzのインストールが必要になるかもしれない。}
+日本語フォントを埋め込んだPDFを出力するには
+`device = cairo_pdf`
+とする（macOSではXQuartzのインストールが必要かもしれない）。
 ただし，すべてのフォントでうまくいくとは限らない。
 
-<!--
-\includegraphics[width=6cm]{p4.pdf}
--->
+\small
 
-WindowsでPDFに日本語フォントを埋め込むためには，**extrafont**パッケージを利用する必要がある。
-\footnote{ただし，OpenTypeフォントは利用不可らしい。}
-
-\vspace{12pt}
+WindowsでPDFに日本語フォントを埋め込むためには，**extrafont**パッケージを利用する必要がある（ただし，OpenTypeフォントは利用不可らしい）。
 
 macOSでは，**`ggsave`**関数のほか，**`quartz.save`**関数も利用可能。
 
@@ -328,7 +323,7 @@ p + stat_count(geom = "bar", fill = "grey50")
 **`annotate`**で注釈。
 `parse = TRUE`で数式を解釈して表示。
 
-```{r expression, fig.width=4.5, fig.height=2.5, out.height="4.5cm", cache=TRUE}
+```{r expression, fig.width=4.5, fig.height=2.5, out.height="3.5cm", cache=TRUE}
 ggplot(data.frame(x = seq(-5, 5, 0.01)), aes(x)) +
   stat_function(fun = function(x) {1 / (1 + exp(-x))}) +
   annotate("text", x = -5, y = 0.875,
@@ -393,11 +388,11 @@ ggplot(hokkaido) + geom_sf(aes(fill = population)) +
 - グラフ描画ggplot2の辞書的まとめ20のコード（MrUnadonさん）
     - https://mrunadon.github.io/ggplot2/
 
----
+## 参考リンク（つづき）
 
 - ggplot2逆引（Hiroaki Yutaniさん）
     - https://yutannihilation.github.io/ggplot2-gyakubiki/
-- Cookbook for R » Graphs（Winston Changさん）
+- Cookbook for R: Graphs（Winston Changさん）
     - http://www.cookbook-r.com/Graphs/
 - Stack Overflowでのggplot2関連の質問
     - https://stackoverflow.com/search?q=ggplot2
