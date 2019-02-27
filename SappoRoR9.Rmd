@@ -90,7 +90,7 @@ egg: 複数のグラフを並べるなど
 
 <!-- 形式的はgeom_blankが使われている。 -->
 
-```{r ggplot_func, fig.width=5.5, fig.height=3, out.height="6cm", cache=TRUE}
+```{r ggplot_func, fig.width=4.5, fig.height=3, out.height="6cm", cache=TRUE}
 p <- ggplot(data = iris)
 print(p)
 ```
@@ -102,7 +102,7 @@ print(p)
 - **`aes`** 関数: 変数とグラフ要素とのaesthetic mappingを生成
 - \textcolor{red}{\bfseries \texttt{ggplot}オブジェクトに`+'演算子で，レイヤーを追加する。}
 
-```{r geom_func, fig.width=5.5, fig.height=3, out.height="5cm", cache=TRUE}
+```{r geom_func, fig.width=4.5, fig.height=3, out.height="4.5cm", cache=TRUE}
 p + geom_point(mapping = aes(x = Sepal.Length, y = Sepal.Width))
 ```
 
@@ -110,14 +110,14 @@ p + geom_point(mapping = aes(x = Sepal.Length, y = Sepal.Width))
 
 **`aes`**関数の`colour`（`color`でもよい）引数を指定する。
 
-```{r colour, fig.width=5.5, fig.height=3, out.height="5.5cm", cache=TRUE}
+```{r colour, fig.width=4.5, fig.height=3, out.height="5.5cm", cache=TRUE}
 p + geom_point(mapping = aes(x = Sepal.Length, y = Sepal.Width,
                              colour = Species))
 ```
 
 ## こうしてもおなじ
 
-```{r colour2, fig.width=5.5, fig.height=3, out.height="5.5cm", cache=TRUE}
+```{r colour2, fig.width=4.5, fig.height=3, out.height="5.5cm", cache=TRUE}
 ggplot(data = iris,
        mapping = aes(x = Sepal.Length, y = Sepal.Width,
                      colour = Species)) +
@@ -128,7 +128,7 @@ ggplot(data = iris,
 
 **`aes`**関数の外で`colour`を指定する（**`geom_point`**関数の`colour`引数に指定する）と，すべての点の色が指定した色になる。
 
-```{r colour3, fig.width=5.5, fig.height=3, out.height="5.5cm", cache=TRUE}
+```{r colour3, fig.width=4.5, fig.height=3, out.height="5.5cm", cache=TRUE}
 p + geom_point(mapping = aes(x = Sepal.Length, y = Sepal.Width),
                colour = "red")
 ```
@@ -138,7 +138,7 @@ p + geom_point(mapping = aes(x = Sepal.Length, y = Sepal.Width),
 
 **`aes`**関数の`shape`引数を指定する。
 
-```{r point_shape, fig.width=4.5, fig.height=3, out.height="5cm", cache=TRUE}
+```{r point_shape, fig.width=4.5, fig.height=3, out.height="5.5cm", cache=TRUE}
 p + geom_point(aes(x = Sepal.Length, y = Sepal.Width,
                    colour = Species, shape = Species))
 ```
@@ -189,7 +189,7 @@ Windowsでは**`windowsFonts`**関数でフォントの設定をしておくか�
 
 ## 漢字をつかった表示
 
-```{r Japanese_font2, dev="cairo_pdf", fig.width=4.5, fig.height=3, out.height="7cm", echo=FALSE, cache=TRUE}
+```{r Japanese_font2, dev="cairo_pdf", fig.width=5, fig.height=3, out.height="6.5cm", echo=FALSE, cache=TRUE}
 print(p3)
 ```
 
@@ -217,19 +217,19 @@ macOSでは，**`ggsave`**関数のほか，**`quartz.save`**関数も利用可�
 
 ## themeをかえる(1)
 
-```{r theme_bw,dev="cairo_pdf", fig.width=4.5, fig.height=3, out.height="6cm", cache=TRUE}
+```{r theme_bw,dev="cairo_pdf", fig.width=5, fig.height=3, out.height="6cm", cache=TRUE}
 p3 + theme_bw(base_family = "IPAexGothic")
 ```
 
 ## themeをかえる(2)
 
-```{r theme_classic, dev="cairo_pdf", fig.width=4.5, fig.height=3, out.height="6cm", cache=TRUE}
+```{r theme_classic, dev="cairo_pdf", fig.width=5, fig.height=3, out.height="6cm", cache=TRUE}
 p3 + theme_classic(base_family = "IPAexGothic")
 ```
 
 ## themeをかえる(3)
 
-```{r theme_excel, dev="cairo_pdf", fig.width=4.5, fig.height=3, out.height="6cm", cache=TRUE}
+```{r theme_excel, dev="cairo_pdf", fig.width=5, fig.height=3, out.height="6cm", cache=TRUE}
 library(ggthemes)
 p2 + scale_colour_excel() + theme_excel()
 ```
@@ -370,8 +370,8 @@ ggplot(hokkaido) + geom_sf(aes(fill = population)) +
   scale_fill_continuous(name = "人口", trans = "log10",
                         breaks = c(10^3, 10^4, 10^5),
                         labels = c("1000", "10000", "100000")) +
-  coord_sf(crs = sf::st_crs(6691), datum = NA) +
-  theme_void(base_family = "IPAexGothic")
+  coord_sf(crs = sf::st_crs(6691)) +
+  theme_bw(base_family = "IPAexGothic")
 ```
 
 # おわりに
