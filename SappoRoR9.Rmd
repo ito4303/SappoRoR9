@@ -370,8 +370,8 @@ ggplot(hokkaido) + geom_sf(aes(fill = population)) +
   scale_fill_continuous(name = "人口", trans = "log10",
                         breaks = c(10^3, 10^4, 10^5),
                         labels = c("1000", "10000", "100000")) +
-  coord_sf(crs = sf::st_crs(6691), datum = NA) +
-  theme_void(base_family = "IPAexGothic")
+  coord_sf(crs = sf::st_crs(6691)) +
+  theme_bw(base_family = "IPAexGothic")
 ```
 
 # おわりに
