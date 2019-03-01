@@ -357,22 +357,37 @@ hokkaido <- dplyr::left_join(hokkaido, hokkaido_popl,
 
 ver. 3で追加になった**geom_sf**を使う。
 
-```{r geom_sf2, dev="cairo_pdf", fig.width=5, fig.height=4, out.height="5cm", message=FALSE}
-ggplot(sapporo) + geom_sf(aes(fill = city)) +
-  scale_fill_discrete(name = "市区", breaks = sapporo$city) +
+<!--
+CRSの指定
+EPSGコード
+  4326: WGS84 (緯度経度）
+  6668: JGD2011 (緯度経度)
+  6680: JGD2011 XII (平面直角座標系)
+  6691: JGD2011 zone 54 (UTM座標系)
+
+cf. GISのための測地成果、測地系、楕円体、投影座標系、EPSGコードのまとめ
+    http://tmizu23.hatenablog.com/entry/20091215/1260868350
+    わかりやすい平面直角座標系
+    http://www.gsi.go.jp/sokuchikijun/jpc.html
+-->
+
+```{r geom_sf, dev="cairo_pdf", fig.width=5, fig.height=4, out.height="4.5cm", message=FALSE}
+ggplot(hokkaido) + geom_sf(aes(fill = population)) +
+  scale_fill_continuous(name = "人口", trans = "log10",
+                        breaks = c(10^3, 10^4, 10^5),
+                        labels = c("1000", "10000", "100000")) +
   theme_bw(base_family = "IPAexGothic")
 ```
 
 ---
 
-```{r geom_sf, dev="cairo_pdf", fig.width=5, fig.height=4, out.height="5cm", message=FALSE}
-ggplot(hokkaido) + geom_sf(aes(fill = population)) +
-  scale_fill_continuous(name = "人口", trans = "log10",
-                        breaks = c(10^3, 10^4, 10^5),
-                        labels = c("1000", "10000", "100000")) +
-  coord_sf(crs = sf::st_crs(6691)) +
-  theme_bw(base_family = "IPAexGothic")
+```{r geom_sf2, dev="cairo_pdf", fig.width=5, fig.height=4, out.height="5cm", message=FALSE}
+ggplot(sapporo) + geom_sf(aes(fill = city)) +
+  scale_fill_discrete(name = "市区", breaks = sapporo$city) +
+  coord_sf(crs = sf::st_crs(6680), datum = NA) +
+  theme_void(base_family = "IPAexGothic")
 ```
+
 
 # おわりに
 
