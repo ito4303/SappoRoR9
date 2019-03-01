@@ -22,9 +22,9 @@ library(ggplot2)
 
 # はじめに
 
-## 今回の発表に使用したコード・データ
+## 今回の発表に使用したコード
 
-https://github.com/ito4303/SappoRoR9 で公開
+GitHub (https://github.com/ito4303/SappoRoR9) で公開
 
 ## このごろよくみるこのようなグラフ
 
@@ -162,9 +162,7 @@ print(p2)
 p2 + scale_colour_manual(values = c("black", "red", "#3355FF"))
 ```
 
-## 漢字をつかう
-
-ここではIPAexゴシックフォントを使用した。
+## カナや漢字をつかう
 
 <!--
 NotoSansCJKjp-Regular を使用するとき
@@ -181,13 +179,15 @@ p3 <- p2 + labs(x = "萼長 (cm)", y = "萼幅(cm)") +
   theme(text = element_text(family = "IPAexGothic", size = 10))
 ```
 
+ここではIPAexゴシックフォントを使用した。
+
 文字コードはUTF-8にしておくとよい（日本語版WindowsのR.exeでは文字化けするかも）。
 
 \small
 
 Windowsでは**`windowsFonts`**関数でフォントの設定をしておくか，**extrafont**パッケージをインストールして，必要な設定をしておく。
 
-## 漢字をつかった表示
+## カナや漢字をつかった表示
 
 ```{r Japanese_font2, dev="cairo_pdf", fig.width=5, fig.height=3, out.height="6.5cm", echo=FALSE, cache=TRUE}
 print(p3)
