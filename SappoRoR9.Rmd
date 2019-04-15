@@ -4,7 +4,7 @@ author: "伊東宏樹"
 date: "2019-03-02 SappoRo.R #9 @ 北海学園大学"
 output:
   beamer_presentation:
-    latex_engine: lualatex
+    latex_engine: xelatex
     theme: metropolis
     keep_tex: false
     includes:

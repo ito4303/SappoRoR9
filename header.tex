@@ -6,13 +6,13 @@
 }
 
 %% フォントの設定
-\setsansfont[Scale=1.0]{TeX Gyre Heros}
+\setsansfont[Scale=0.95]{Latin Modern Sans}
 %% http://mathematicalcoffee.blogspot.com/2012/03/getting-straight-single-quotes-for.html
 \setmonofont[Scale=MatchLowercase,Ligatures=Common]{Latin Modern Mono}
 
 %% 日本語フォントの設定
-\usepackage[deluxe,noto-otf]{luatexja-preset}
-\renewcommand{\kanjifamilydefault}{\gtdefault}
+\usepackage{zxjatype}
+\usepackage[noto]{zxjafont}
 
 %% change fontsize of R code
 % https://stackoverflow.com/questions/38323331/code-chunk-font-size-in-beamer-with-knitr-and-latex
