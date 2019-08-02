@@ -5,15 +5,13 @@
   pdfencoding=auto
 }
 
-%% Fonts
-\usepackage[T1]{fontenc}
-\usepackage{textcomp}
-\usepackage[scale=1.0]{tgheros}
-\usepackage[scaled]{beramono}
+%% フォントの設定
+\setsansfont[Scale=1.0]{TeX Gyre Heros}
+%% http://mathematicalcoffee.blogspot.com/2012/03/getting-straight-single-quotes-for.html
+\setmonofont[Scale=MatchLowercase,Ligatures=Common]{Latin Modern Mono}
 
-%% Japanese font
-\usepackage{luatexja-otf}
-\usepackage[match,deluxe,expert,noto-otf]{luatexja-preset}
+%% 日本語フォントの設定
+\usepackage[deluxe,noto-otf]{luatexja-preset}
 \renewcommand{\kanjifamilydefault}{\gtdefault}
 
 %% change fontsize of R code

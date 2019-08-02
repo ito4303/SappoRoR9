@@ -40,4 +40,6 @@ rsconnect/
 *.Rproj
 *.pdf
 *_files/
-
+*.log
+*.xlsx
+*.RData
