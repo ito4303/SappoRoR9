@@ -204,7 +204,7 @@ ggsave("iris.pdf", device = cairo_pdf,
 
 日本語フォントを埋め込んだPDFを出力するには
 `device = cairo_pdf`
-とする（macOSではXQuartzのインストールが必要かもしれない）。
+とする（macOSではXQuartzのインストールが必要）。
 ただし，すべてのフォントでうまくいくとは限らない。
 
 \small
